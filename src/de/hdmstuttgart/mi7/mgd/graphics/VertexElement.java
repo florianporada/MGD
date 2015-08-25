@@ -1,4 +1,4 @@
-package de.hdmstuttgart.mi7.mgd;
+package de.hdmstuttgart.mi7.mgd.graphics;
 
 /**
  * Created by florianporada on 25.08.15.
@@ -16,11 +16,12 @@ public class VertexElement {
 
     public VertexSemantic semantic;
 
-    public VertexElement(int offset, int stride, int type, int count){
+    public VertexElement(int offset, int stride, int type, int count, VertexSemantic vertexSemantic){
         this.offset = offset;
         this.stride = stride;
         this.type = type;
         this.count = count;
+        this.semantic = vertexSemantic;
     }
 
     public int getOffset() {

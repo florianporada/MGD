@@ -1,7 +1,9 @@
 package de.hdmstuttgart.mi7.mgd.game;
 
+import android.content.Context;
 import android.opengl.GLSurfaceView;
 import de.hdmstuttgart.mi7.mgd.graphics.GraphicsDevice;
+import de.hdmstuttgart.mi7.mgd.graphics.Renderer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -13,7 +15,14 @@ public abstract class Game implements GLSurfaceView.Renderer {
     private boolean initialized;
     private long lastTime;
 
+    protected Context context;
     protected GraphicsDevice graphicsDevice;
+    protected Renderer renderer;
+
+
+    public Game(Context context) {
+        this.context = context;
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -22,6 +31,8 @@ public abstract class Game implements GLSurfaceView.Renderer {
         if (!initialized) {
             graphicsDevice = new GraphicsDevice();
             graphicsDevice.onSurfaceCreated(gl);
+
+            renderer = new Renderer(graphicsDevice);
 
             initialize();
             initialized = true;

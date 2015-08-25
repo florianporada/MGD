@@ -1,4 +1,4 @@
-package de.hdmstuttgart.mi7.mgd;
+package de.hdmstuttgart.mi7.mgd.graphics;
 
 import java.nio.ByteBuffer;
 

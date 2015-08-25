@@ -6,6 +6,7 @@ import android.opengl.Matrix;
  * Created by florianporada on 25.08.15.
  */
 public class Matrix4x4 {
+
     public float[] m = new float[16];
 
     public Matrix4x4() {
@@ -145,4 +146,5 @@ public class Matrix4x4 {
         Matrix.frustumM(m, 0, left, right, bottom, top, near, far);
         return this;
     }
+
 }

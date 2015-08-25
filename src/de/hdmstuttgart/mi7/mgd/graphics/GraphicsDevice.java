@@ -1,7 +1,5 @@
 package de.hdmstuttgart.mi7.mgd.graphics;
 
-import de.hdmstuttgart.mi7.mgd.VertexBuffer;
-import de.hdmstuttgart.mi7.mgd.VertexElement;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -38,6 +36,10 @@ public class GraphicsDevice {
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadMatrixf(viewProjection.m, 0);
         gl.glMatrixMode(GL10.GL_MODELVIEW);
+    }
+
+    public void setWorldMatrix(Matrix4x4 world) {
+        gl.glLoadMatrixf(world.m, 0);
     }
 
     public void bindVertexBuffer(VertexBuffer vertexBuffer){
