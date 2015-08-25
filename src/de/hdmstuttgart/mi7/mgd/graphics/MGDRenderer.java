@@ -24,7 +24,7 @@ public class MGDRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         if(System.currentTimeMillis() % 2 == 0){
-            gl.glClearColor(1.9f, 1.5f, 2.2f, 1.0f);
+            gl.glClearColor(1.9f, 1.5f, 2.2f, 0.1f);
         }else{
             gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         }
