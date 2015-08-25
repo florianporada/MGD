@@ -1,9 +1,11 @@
 package de.hdmstuttgart.mi7.mgd.graphics;
 
 import de.hdmstuttgart.mi7.mgd.VertexBuffer;
+import de.hdmstuttgart.mi7.mgd.VertexElement;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 
 import javax.microedition.khronos.opengles.GL10;
+import java.nio.ByteBuffer;
 
 /**
  * Created by florianporada on 25.08.15.
@@ -38,7 +40,56 @@ public class GraphicsDevice {
         gl.glMatrixMode(GL10.GL_MODELVIEW);
     }
 
-    void bindVertexBuffer(VertexBuffer vertexBuffer){
+    public void bindVertexBuffer(VertexBuffer vertexBuffer){
+        ByteBuffer buffer = vertexBuffer.getByteBuffer();
 
+        for (VertexElement element : vertexBuffer.getVertexElements()){
+            int offset = element.getOffset();
+            int stride = element.getStride();
+            int type = element.getType();
+            int count = element.getCount();
+
+            buffer.position(offset);
+
+            switch (element.getSemantic()){
+                case VERTEX_ELEMENT_POSITION:
+                    gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+                    gl.glVertexPointer(count, type, stride, buffer);
+                    break;
+
+                case VERTEX_ELEMENT_COLOR:
+                    gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+                    gl.glColorPointer(count, type, stride, buffer);
+                    break;
+
+                case VERTEX_ELEMENT_TEXCOORD:
+                    gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+                    gl.glTexCoordPointer(count, type, stride, buffer);
+            }
+
+        }
+    }
+
+    public void unbindVertexBuffer(VertexBuffer vertexBuffer){
+        for(VertexElement element : vertexBuffer.getVertexElements()){
+            switch (element.getSemantic()){
+                case VERTEX_ELEMENT_POSITION:
+                    gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+                    break;
+
+                case VERTEX_ELEMENT_COLOR:
+                    gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+                    break;
+
+                case VERTEX_ELEMENT_TEXCOORD:
+                    gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+                    break;
+            }
+        }
+
+    }
+
+    public void draw(int mode, int first, int count){
+        gl.glDrawArrays(mode, first, count);
     }
 }

@@ -6,16 +6,16 @@ import java.nio.ByteBuffer;
  * Created by florianporada on 25.08.15.
  */
 public class VertexBuffer {
-    private VertexElement vertexElement[];
+    private VertexElement vertexElements[];
     private ByteBuffer byteBuffer;
-    private int vertices;
+    private int numVertices;
 
-    public VertexElement[] getVertexElement() {
-        return vertexElement;
+    public VertexElement[] getVertexElements() {
+        return vertexElements;
     }
 
-    public void setVertexElement(VertexElement[] vertexElement) {
-        this.vertexElement = vertexElement;
+    public void setVertexElements(VertexElement[] vertexElements) {
+        this.vertexElements = vertexElements;
     }
 
     public ByteBuffer getByteBuffer() {
@@ -26,11 +26,11 @@ public class VertexBuffer {
         this.byteBuffer = byteBuffer;
     }
 
-    public int getVertices() {
-        return vertices;
+    public int getNumVertices() {
+        return numVertices;
     }
 
-    public void setVertices(int vertices) {
-        this.vertices = vertices;
+    public void setNumVertices(int numVertices) {
+        this.numVertices = numVertices;
     }
 }
