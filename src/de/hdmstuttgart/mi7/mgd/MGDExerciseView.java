@@ -14,7 +14,7 @@ public class MGDExerciseView extends GLSurfaceView {
     public MGDExerciseView(Context context) {
         super(context);
         // TODO Auto-generated constructor stub
-        MGDRenderer renderer = new MGDRenderer();
+        MGDExerciseGame renderer = new MGDExerciseGame();
         setRenderer(renderer);
         setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
