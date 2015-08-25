@@ -1,0 +1,6 @@
+// TODO: Top Down Sicht
+// TODO: Gegner kommen zufällig von oben nach unten
+// TODO: Ausweichen oder Abschießen
+// TODO: PowerUps:
+			// TODO: Schussfrequenz
+			// TODO: Schnellere Bewegung
