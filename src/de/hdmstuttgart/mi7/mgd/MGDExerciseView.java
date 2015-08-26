@@ -2,9 +2,6 @@ package de.hdmstuttgart.mi7.mgd;
 
 import android.opengl.GLSurfaceView;
 import android.content.Context;
-import android.view.Window;
-import android.view.WindowManager;
-
 /**
  * Created by florianporada on 25.08.15.
  */

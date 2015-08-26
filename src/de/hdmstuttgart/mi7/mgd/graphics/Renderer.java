@@ -12,10 +12,12 @@ public class Renderer {
         this.graphicsDevice = graphicsDevice;
     }
 
-    public void drawMesh(Mesh mesh, Matrix4x4 world) {
+    public void drawMesh(Mesh mesh, Matrix4x4 world, Material material) {
         graphicsDevice.setWorldMatrix(world);
 
-        VertexBuffer vertexBuffer = mesh.getBuffer();
+        setupMaterial(material);
+
+        VertexBuffer vertexBuffer = mesh.getVertexBuffer();
         graphicsDevice.bindVertexBuffer(vertexBuffer);
         graphicsDevice.draw(mesh.getMode(), 0, vertexBuffer.getNumVertices());
         graphicsDevice.unbindVertexBuffer(vertexBuffer);
@@ -23,5 +25,25 @@ public class Renderer {
 
     public GraphicsDevice getGraphicsDevice() {
         return graphicsDevice;
+    }
+
+    private void setupMaterial(Material material) {
+        graphicsDevice.bindTexture(material.getTexture());
+        graphicsDevice.setTextureFilters(material.getTextureFilterMin(), material.getTextureFilterMag());
+        graphicsDevice.setTextureWrapMode(material.getTextureWrapModeU(), material.getTextureWrapModeV());
+        graphicsDevice.setTextureBlendMode(material.getTextureBlendMode());
+        graphicsDevice.setTextureBlendColor(material.getTextureBlendColor());
+
+        graphicsDevice.setMaterialColor(material.getMaterialColor());
+        graphicsDevice.setBlendFactors(material.getBlendFactorSrc(), material.getBlendFactorDest());
+
+        graphicsDevice.setCullSide(material.getCullSide());
+        graphicsDevice.setDepthTest(material.getDepthTestFunction());
+        graphicsDevice.setDepthWrite(material.isDepthWrite());
+        graphicsDevice.setAlphaTest(material.getAlphaTestFunction(), material.getAlphaTestValue());
+    }
+
+    public void drawText(TextBuffer textBuffer, Matrix4x4 world) {
+        drawMesh(textBuffer.getMesh(), world, textBuffer.getSpriteFont().getMaterial());
     }
 }

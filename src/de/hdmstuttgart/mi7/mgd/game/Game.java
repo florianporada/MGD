@@ -36,8 +36,11 @@ public abstract class Game implements GLSurfaceView.Renderer {
 
             initialize();
             initialized = true;
+
+            loadContent();
         } else {
             graphicsDevice.onSurfaceCreated(gl);
+            loadContent();
         }
     }
 
@@ -62,4 +65,5 @@ public abstract class Game implements GLSurfaceView.Renderer {
     public abstract void update(float deltaSeconds);
     public abstract void draw(float deltaSeconds);
     public abstract void resize(int width, int height);
+    public abstract void loadContent();
 }

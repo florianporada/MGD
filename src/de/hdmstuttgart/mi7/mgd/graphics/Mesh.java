@@ -14,19 +14,27 @@ import java.util.Vector;
  * Created by florianporada on 25.08.15.
  */
 public class Mesh {
-    private VertexBuffer buffer;
+    private VertexBuffer vertexBuffer;
     private int mode;
 
-    public VertexBuffer getBuffer() {
-        return buffer;
+    public Mesh() {
     }
 
-    public void setBuffer(VertexBuffer buffer) {
-        this.buffer = buffer;
+    public Mesh(VertexBuffer vertexBuffer, int mode) {
+        this.vertexBuffer = vertexBuffer;
+        this.mode = mode;
     }
 
     public int getMode() {
         return mode;
+    }
+
+    public VertexBuffer getVertexBuffer() {
+        return vertexBuffer;
+    }
+
+    public void setVertexBuffer(VertexBuffer buffer) {
+        this.vertexBuffer = buffer;
     }
 
     public void setMode(int mode) {
@@ -154,12 +162,12 @@ public class Mesh {
 
         VertexBuffer vertexBuffer = new VertexBuffer();
         vertexBuffer.setVertexElements(elements);
-        vertexBuffer.setByteBuffer(buffer);
+        vertexBuffer.setBuffer(buffer);
         vertexBuffer.setNumVertices(indexGroups.size());
 
 
         Mesh mesh = new Mesh();
-        mesh.buffer = vertexBuffer;
+        mesh.vertexBuffer = vertexBuffer;
         mesh.mode = GL10.GL_TRIANGLES;
 
         return mesh;

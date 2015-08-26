@@ -6,24 +6,24 @@ import java.nio.ByteBuffer;
  * Created by florianporada on 25.08.15.
  */
 public class VertexBuffer {
-    private VertexElement vertexElements[];
-    private ByteBuffer byteBuffer;
+    private VertexElement elements[];
+    private ByteBuffer buffer;
     private int numVertices;
 
-    public VertexElement[] getVertexElements() {
-        return vertexElements;
+    public VertexElement[] getElements() {
+        return elements;
     }
 
     public void setVertexElements(VertexElement[] vertexElements) {
-        this.vertexElements = vertexElements;
+        this.elements = vertexElements;
     }
 
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
+    public ByteBuffer getBuffer() {
+        return buffer;
     }
 
-    public void setByteBuffer(ByteBuffer byteBuffer) {
-        this.byteBuffer = byteBuffer;
+    public void setBuffer(ByteBuffer byteBuffer) {
+        this.buffer = byteBuffer;
     }
 
     public int getNumVertices() {
