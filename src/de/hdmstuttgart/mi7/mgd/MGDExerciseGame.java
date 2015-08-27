@@ -5,8 +5,11 @@ import java.io.InputStream;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.view.KeyEvent;
+import android.view.View;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
+import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 
 public class MGDExerciseGame extends Game {
@@ -20,8 +23,10 @@ public class MGDExerciseGame extends Game {
     private TextBuffer text;
     private Matrix4x4 hudText;
 
-	public MGDExerciseGame(Context context) {
-		super(context);
+    private boolean pressed = false;
+
+	public MGDExerciseGame(View view) {
+		super(view);
 	}
 
 	@Override
@@ -81,8 +86,41 @@ public class MGDExerciseGame extends Game {
 
     @Override
     public void update(float deltaSeconds) {
-        worldJet.rotateY(deltaSeconds * 25);
-        worldJet.translate(0, deltaSeconds * 0.2f , 0);
+        InputEvent inputEvent = inputSystem.peekEvent();
+        while (inputEvent != null) {
+
+            switch (inputEvent.getInputDevice()) {
+                case KEYBOARD:
+                    switch (inputEvent.getInputAction()) {
+                        case DOWN:
+                            switch (inputEvent.getKeycode()) {
+                                case KeyEvent.KEYCODE_MENU:
+                                    System.out.println("key pressed");
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+                case TOUCHSCREEN:
+                    switch (inputEvent.getInputAction()) {
+                        case DOWN:
+                            System.out.println(inputEvent.getTime());
+                            pressed = true;
+                            break;
+                        case UP:
+                            System.out.println(inputEvent.getTime());
+                            pressed = false;
+                            break;
+                    }
+                    break;
+            }
+            inputSystem.popEvent();
+            inputEvent = inputSystem.peekEvent();
+        }
+        if(pressed){
+            worldJet.rotateY(deltaSeconds * 25);
+            worldJet.translate(0, deltaSeconds * 0.2f, 0);
+        }
         renderer.drawText(text, hudText);
     }
 

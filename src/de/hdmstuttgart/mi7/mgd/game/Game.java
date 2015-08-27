@@ -2,8 +2,10 @@ package de.hdmstuttgart.mi7.mgd.game;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.view.View;
 import de.hdmstuttgart.mi7.mgd.graphics.GraphicsDevice;
 import de.hdmstuttgart.mi7.mgd.graphics.Renderer;
+import de.hdmstuttgart.mi7.mgd.input.InputSystem;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,10 +20,15 @@ public abstract class Game implements GLSurfaceView.Renderer {
     protected Context context;
     protected GraphicsDevice graphicsDevice;
     protected Renderer renderer;
+    protected InputSystem inputSystem;
+    protected View view;
 
 
-    public Game(Context context) {
-        this.context = context;
+    public Game(View view) {
+        this.view = view;
+        this.context = view.getContext();
+
+        inputSystem = new InputSystem(view);
     }
 
     @Override
