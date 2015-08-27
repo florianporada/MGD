@@ -7,23 +7,27 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.view.View;
+import de.hdmstuttgart.mi7.mgd.collision.AABB;
+import de.hdmstuttgart.mi7.mgd.collision.Point;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
+import de.hdmstuttgart.mi7.mgd.math.Vector3;
 
 public class MGDExerciseGame extends Game {
 
 	private Camera sceneCam, hudCam;
-	private Mesh meshJet;
-	private Texture texJet;
-	private Material matJet;
-	private Matrix4x4 worldJet;
-    private SpriteFont font;
-    private TextBuffer text;
-    private Matrix4x4 hudText;
+	private Mesh meshJet, meshBox;
+	private Texture textureJet, textureBox;
+	private Material materialJet, materialBox;
+	private Matrix4x4 matrixJet, matrixBox, matrixTest, matrixTitle;
+    private SpriteFont fontTest, fontTitle;
+    private TextBuffer textTest, textTitle;
+    private AABB aabbTest;
 
-    private boolean pressed = false;
+    private boolean pressed = false, yas = false;
+    private int counter;
 
 	public MGDExerciseGame(View view) {
 		super(view);
@@ -47,41 +51,55 @@ public class MGDExerciseGame extends Game {
         projection = new Matrix4x4();
         projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
         view = new Matrix4x4();
-        view.translate(0, 0, -5 );
+        view.translate(0, 0, -5);
         sceneCam = new Camera();
         sceneCam.setProjection(projection);
         sceneCam.setView(view);
 
-        matJet = new Material();
-        worldJet = new Matrix4x4();
-        worldJet.scale(0.2f);
+        materialJet = new Material();
+        matrixJet = new Matrix4x4();
+        matrixJet.scale(0.2f);
 
-        hudText = new Matrix4x4();
-        hudText.scale(2.3f);
-        hudText.translate(300f, -900f, 0);
-
+        materialBox = new Material();
+        matrixBox = new Matrix4x4();
+        matrixBox.translate(20f, -200f, 0);
     }
 
 	@Override
 	public void loadContent() {
-        font = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 16);
-        text = graphicsDevice.createTextBuffer(font, 128);
-        text.setText("Stahp!");
 
 		try {
 			InputStream stream;
 
+            //JET
             stream = context.getAssets().open("jet.obj");
             meshJet = Mesh.loadFromOBJ(stream);
+
             stream = context.getAssets().open("jet.png");
-            texJet = graphicsDevice.createTexture(stream);
-            matJet.setTexture(texJet);
-            worldJet.translate(0, 0, 0);
+            textureJet = graphicsDevice.createTexture(stream);
+            materialJet.setTexture(textureJet);
+            matrixJet.translate(0, 0, 0);
+
+            //BOX
+            stream = context.getAssets().open("box.obj");
+            meshBox = Mesh.loadFromOBJ(stream);
+
+            stream = context.getAssets().open("road.png");
+            textureBox = graphicsDevice.createTexture(stream);
+            materialBox.setTexture(textureBox);
+
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+        fontTest = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 64);
+        textTest = graphicsDevice.createTextBuffer(fontTest, 16);
+        textTest.setText("Stahp!");
+
+        matrixTest = Matrix4x4.createTranslation(0, 0, 0);
+        aabbTest = new AABB(0, 0, 400, 400);
 	}
 
     @Override
@@ -104,12 +122,35 @@ public class MGDExerciseGame extends Game {
                 case TOUCHSCREEN:
                     switch (inputEvent.getInputAction()) {
                         case DOWN:
-                            System.out.println(inputEvent.getTime());
+                            //Get Y
+                            System.out.println(inputEvent.getValues()[0]);
+                            //GET X
+                            System.out.println(inputEvent.getValues()[1]);
                             pressed = true;
+
+
+                            Vector3 screenTouchPosition = new Vector3(
+                                    (inputEvent.getValues()[0] / (screenWidth / 2) - 1),
+                                    -(inputEvent.getValues()[1] / (screenHeight / 2) - 1),
+                                    0);
+
+                            Vector3 worldTouchPosition = hudCam.unproject(screenTouchPosition, 1);
+
+                            Point touchPoint = new Point(
+                                    worldTouchPosition.getX(),
+                                    worldTouchPosition.getY());
+
+                                if (touchPoint.intersects(aabbTest)){
+                                    counter++;
+                                    yas = true;
+                                    textTest.setText("asdf"+counter);
+
+                                    System.out.println(aabbTest.getPosition());
+                                }
                             break;
                         case UP:
-                            System.out.println(inputEvent.getTime());
                             pressed = false;
+                            yas = false;
                             break;
                     }
                     break;
@@ -118,10 +159,9 @@ public class MGDExerciseGame extends Game {
             inputEvent = inputSystem.peekEvent();
         }
         if(pressed){
-            worldJet.rotateY(deltaSeconds * 25);
-            worldJet.translate(0, deltaSeconds * 0.2f, 0);
+            matrixJet.rotateY(deltaSeconds * 25);
+            matrixJet.translate(0, deltaSeconds * 0.8f, 0);
         }
-        renderer.drawText(text, hudText);
     }
 
 	@Override
@@ -130,12 +170,18 @@ public class MGDExerciseGame extends Game {
 
         //Stuff fuer LVL
         graphicsDevice.setCamera(sceneCam);
-        renderer.drawMesh(meshJet, worldJet, matJet);
-        renderer.drawText(text, worldJet);
+        renderer.drawMesh(meshJet, matrixJet, materialJet);
+        renderer.drawMesh(meshBox, matrixBox, materialBox);
+
+        if(yas){
+            renderer.drawText(textTest, matrixJet);
+        }
+
+
 
         //Stuff fue HUD
         graphicsDevice.setCamera(hudCam);
-        renderer.drawText(text, hudText);
+        renderer.drawText(textTest, matrixTest);
 
     }
 
@@ -152,7 +198,8 @@ public class MGDExerciseGame extends Game {
         projection.setPerspectiveProjection(-0.1f * aspect, 0.1f * aspect, -0.1f, 0.1f, 0.1f, 100.0f);
         sceneCam.setProjection(projection);
 
-        hudText.translate(-width / 2, height / 2 - 16, 0);
+        matrixTest.setIdentity();
+        //matrixTest.translate(-width / 2, height / 2 - 64, 0);
 
     }
 

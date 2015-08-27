@@ -147,4 +147,10 @@ public class Matrix4x4 {
         return this;
     }
 
+    public Matrix4x4 getInverse() {
+        Matrix4x4 result = new Matrix4x4();
+        Matrix.invertM(result.m, 0, m, 0);
+        return result;
+    }
+
 }

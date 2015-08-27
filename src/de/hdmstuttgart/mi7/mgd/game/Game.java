@@ -22,6 +22,8 @@ public abstract class Game implements GLSurfaceView.Renderer {
     protected Renderer renderer;
     protected InputSystem inputSystem;
     protected View view;
+    protected int screenWidth;
+    protected int screenHeight;
 
 
     public Game(View view) {
@@ -54,6 +56,8 @@ public abstract class Game implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         graphicsDevice.resize(width, height);
+        screenWidth = width;
+        screenHeight = height;
         resize(width, height);
     }
 

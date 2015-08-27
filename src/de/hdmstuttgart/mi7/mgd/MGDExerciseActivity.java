@@ -2,6 +2,7 @@ package de.hdmstuttgart.mi7.mgd;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
