@@ -25,8 +25,8 @@ public class JetObject extends GameObject{
         super(matrix, aabb);
     }
 
-    public JetObject(Matrix4x4 matrix, Circle circle) {
-        super(matrix, circle);
+    public JetObject(Matrix4x4 matrix) {
+        super(matrix);
     }
 
     @Override

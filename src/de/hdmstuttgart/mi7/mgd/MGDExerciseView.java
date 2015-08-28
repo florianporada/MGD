@@ -18,4 +18,16 @@ public class MGDExerciseView extends GLSurfaceView {
         setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        game.pause();
+    }
+
+    @Override
+    public void onResume() {
+        game.resume();
+        super.onResume();
+    }
+
 }

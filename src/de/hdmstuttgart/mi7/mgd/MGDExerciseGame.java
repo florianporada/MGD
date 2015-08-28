@@ -7,6 +7,9 @@ import java.lang.System;
 import java.util.ArrayList;
 
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.KeyEvent;
 import android.view.View;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
@@ -20,20 +23,24 @@ import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector2;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
+import de.hdmstuttgart.mmi.mgd.R;
 
 import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randfloat;
 
 public class MGDExerciseGame extends Game {
 
 	private Camera sceneCam, hudCam;
-	private Mesh meshJet, meshMissile;
-	private Texture textureJet, textureMissile;
-	private Material materialJet, materialMissile;
-	private Matrix4x4 matrixJet, matrixMissile, matrixTest, matrixTitle;
-    private SpriteFont fontTest, fontTitle;
-    private TextBuffer textTest, textTitle;
+
+	private Matrix4x4 matrixTest;
+    private SpriteFont fontTest;
+    private TextBuffer textTest;
     private AABB controlBoxLeft, controlBoxRight;
     private JetObject jetObject, missileObject, tmpObject;
+
+    //MEDIAPLAYER
+    private MediaPlayer mediaPlayer;
+    private SoundPool soundPool;
+    private int clickSound;
 
     private boolean pressedLeft = false, pressedRight = false, yas = false, lock = false;
     private int counter;
@@ -73,7 +80,7 @@ public class MGDExerciseGame extends Game {
         controlBoxRight = new AABB(0, -900, 500, 500);
 
         //GAMEOBJECTS
-        jetObject = new JetObject(new Matrix4x4(), new Circle(0 ,0, 200f));
+        jetObject = new JetObject(new Matrix4x4());
         jetObject.getMatrix().translate(0, -15f, 0);
         jetObject.getMatrix().scale(0.7f);
         missileObject = new JetObject(new Matrix4x4(), new AABB(0,0, 400, 400));
@@ -110,6 +117,15 @@ public class MGDExerciseGame extends Game {
         textTest.setText("Stahp!");
 
         matrixTest = Matrix4x4.createTranslation(0, 0, 0);
+
+        //LOAD MEDIAPLAYER
+        while (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop);
+        }
+        mediaPlayer.start();
+
+        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        clickSound = soundPool.load(context, R.raw.click, 1);
 	}
 
     @Override
@@ -137,7 +153,7 @@ public class MGDExerciseGame extends Game {
                             //COORDINATES JET MATRIX
                             System.out.println("Matrix X: " + jetObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13] + " Matrix Z: " + jetObject.getMatrix().m[14]);
                             //COORDINATES JET HITBOX
-                            System.out.print("Circle X: " + jetObject.getHitBoxCircle().getPosition().getX() + " Circle Y: " + jetObject.getHitBoxCircle().getPosition().getY());
+                            System.out.println("Circle X: " + jetObject.getHitBoxCircle().getPosition().getX() + " Circle Y: " + jetObject.getHitBoxCircle().getPosition().getY());
                             //COORDINATES MISSILE
                             System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
 
@@ -151,6 +167,8 @@ public class MGDExerciseGame extends Game {
                                 counter++;
                                 yas = true;
                                 textTest.setText("" + counter);
+                                if (soundPool != null)
+                                    soundPool.play(clickSound, 1, 1, 0, 0, 1);
                             }
 
                             if(touchPoint.intersects(controlBoxLeft)){
@@ -163,7 +181,6 @@ public class MGDExerciseGame extends Game {
                                 pressedRight = true;
                             }
 
-
                             break;
                         case UP:
                             pressedLeft = false;
@@ -175,6 +192,11 @@ public class MGDExerciseGame extends Game {
             }
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
+
+//            for(JetObject o : boxArray){
+//                if(jetObject.getHitBoxCircle().intersects(o.getHitBoxAABB()))
+//                    System.out.println("peng");
+//            }
 
 
             if(pressedLeft){
@@ -244,10 +266,21 @@ public class MGDExerciseGame extends Game {
 
     }
 
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void pause() {
+        if (mediaPlayer != null)
+        	mediaPlayer.pause();
+    }
+
     public ArrayList<JetObject> boxDropper(int amount){
         ArrayList<JetObject> a = new ArrayList<>();
         for(int i = 0; i < amount; i++){
-            JetObject o = new JetObject(new Matrix4x4(), new AABB(0,0, 400, 400));
+            JetObject o = new JetObject(new Matrix4x4(), new AABB(0,0, 20, 20));
             o.getMatrix().translate(randfloat(-10, 10), randfloat(25, 500), 0);
             a.add(o);
         }

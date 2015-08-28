@@ -33,9 +33,9 @@ public abstract class GameObject {
         this.matrix = matrix;
         this.hitBoxAABB = aabb;}
 
-    public GameObject(Matrix4x4 matrix, Circle circle) {
+    public GameObject(Matrix4x4 matrix) {
         this.matrix = matrix;
-        this.hitBoxCircle = circle;
+        this.hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), 150f);
     }
 
     public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, View view) throws IOException {

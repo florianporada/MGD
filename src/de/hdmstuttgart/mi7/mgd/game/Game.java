@@ -77,4 +77,6 @@ public abstract class Game implements GLSurfaceView.Renderer {
     public abstract void draw(float deltaSeconds);
     public abstract void resize(int width, int height);
     public abstract void loadContent();
+    public abstract void pause();
+    public abstract void resume();
 }
