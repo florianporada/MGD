@@ -7,7 +7,7 @@ public class Texture {
 
     private int height, width, handle;
 
-    Texture(int height, int width, int handle){
+    public Texture(int height, int width, int handle){
         this.height = height;
         this.width = width;
         this.handle = handle;
@@ -19,6 +19,10 @@ public class Texture {
 
     public int getWidth() {
         return width;
+    }
+
+    public Texture getDefaultTexture(){
+        return new Texture(32, 32, 3);
     }
 
     int getHandle() {

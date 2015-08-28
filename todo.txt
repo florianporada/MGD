@@ -4,3 +4,7 @@
 // TODO: PowerUps:
 			// TODO: Schussfrequenz
 			// TODO: Schnellere Bewegung
+
+
+//TODO: Sound Einbinden
+//TODO: Hitboxen an Matrix anpassen

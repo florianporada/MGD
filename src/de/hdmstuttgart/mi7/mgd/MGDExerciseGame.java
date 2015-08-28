@@ -3,31 +3,41 @@ package de.hdmstuttgart.mi7.mgd;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.content.Context;
+import java.lang.System;
+import java.util.ArrayList;
+
 import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.view.View;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
+import de.hdmstuttgart.mi7.mgd.collision.Circle;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
 import de.hdmstuttgart.mi7.mgd.game.Game;
+import de.hdmstuttgart.mi7.mgd.gameObject.GameObject;
+import de.hdmstuttgart.mi7.mgd.gameObject.JetObject;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
+import de.hdmstuttgart.mi7.mgd.math.Vector2;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
+
+import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randfloat;
 
 public class MGDExerciseGame extends Game {
 
 	private Camera sceneCam, hudCam;
-	private Mesh meshJet, meshBox;
-	private Texture textureJet, textureBox;
-	private Material materialJet, materialBox;
-	private Matrix4x4 matrixJet, matrixBox, matrixTest, matrixTitle;
+	private Mesh meshJet, meshMissile;
+	private Texture textureJet, textureMissile;
+	private Material materialJet, materialMissile;
+	private Matrix4x4 matrixJet, matrixMissile, matrixTest, matrixTitle;
     private SpriteFont fontTest, fontTitle;
     private TextBuffer textTest, textTitle;
-    private AABB aabbTest;
+    private AABB controlBoxLeft, controlBoxRight;
+    private JetObject jetObject, missileObject, tmpObject;
 
-    private boolean pressed = false, yas = false;
+    private boolean pressedLeft = false, pressedRight = false, yas = false, lock = false;
     private int counter;
+    private ArrayList<JetObject> boxArray;
 
 	public MGDExerciseGame(View view) {
 		super(view);
@@ -41,6 +51,7 @@ public class MGDExerciseGame extends Game {
 //		projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 100f);
 //		view.translate(0, 0, -5);
 
+        //HUDCAM
         projection = new Matrix4x4();
         projection.setOrhtogonalProjection(-100f, 100f, -100f, 100f, 0.0f, 100.0f);
         view = new Matrix4x4();
@@ -48,48 +59,48 @@ public class MGDExerciseGame extends Game {
         hudCam.setProjection(projection);
         hudCam.setView(view);
 
+        //SCENECAM
         projection = new Matrix4x4();
         projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
         view = new Matrix4x4();
-        view.translate(0, 0, -5);
+        view.translate(0, 0, -25);
         sceneCam = new Camera();
         sceneCam.setProjection(projection);
         sceneCam.setView(view);
 
-        materialJet = new Material();
-        matrixJet = new Matrix4x4();
-        matrixJet.scale(0.2f);
+        //CONTROLS
+        controlBoxLeft = new AABB(-500, -900, 500, 500);
+        controlBoxRight = new AABB(0, -900, 500, 500);
 
-        materialBox = new Material();
-        matrixBox = new Matrix4x4();
-        matrixBox.translate(20f, -200f, 0);
+        //GAMEOBJECTS
+        jetObject = new JetObject(new Matrix4x4(), new Circle(0 ,0, 200f));
+        jetObject.getMatrix().translate(0, -15f, 0);
+        jetObject.getMatrix().scale(0.7f);
+        missileObject = new JetObject(new Matrix4x4(), new AABB(0,0, 400, 400));
+        missileObject.getMatrix().translate(0, -15f, 0);
+
+        tmpObject = new JetObject(new Matrix4x4(), new AABB(0,0, 400, 400));
+        tmpObject.getMatrix().translate(-10, 25,0);
+
+        //RANDOM BOXES
+        boxArray = boxDropper(10);
     }
 
 	@Override
 	public void loadContent() {
 
 		try {
-			InputStream stream;
-
             //JET
-            stream = context.getAssets().open("jet.obj");
-            meshJet = Mesh.loadFromOBJ(stream);
+            jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, view);
+            //MISSILE
+            missileObject.loadObject("box.obj", "box.png", graphicsDevice, view);
+            //TMP
+            tmpObject.loadObject("box.obj", "box.png", graphicsDevice, view);
 
-            stream = context.getAssets().open("jet.png");
-            textureJet = graphicsDevice.createTexture(stream);
-            materialJet.setTexture(textureJet);
-            matrixJet.translate(0, 0, 0);
-
-            //BOX
-            stream = context.getAssets().open("box.obj");
-            meshBox = Mesh.loadFromOBJ(stream);
-
-            stream = context.getAssets().open("road.png");
-            textureBox = graphicsDevice.createTexture(stream);
-            materialBox.setTexture(textureBox);
-
-
-		} catch (IOException e) {
+            for(JetObject o : boxArray){
+                o.loadObject("box.obj", "box.png", graphicsDevice, view);
+            }
+        } catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -99,14 +110,13 @@ public class MGDExerciseGame extends Game {
         textTest.setText("Stahp!");
 
         matrixTest = Matrix4x4.createTranslation(0, 0, 0);
-        aabbTest = new AABB(0, 0, 400, 400);
 	}
 
     @Override
     public void update(float deltaSeconds) {
+        jetObject.updateHitBoxCircle();
         InputEvent inputEvent = inputSystem.peekEvent();
         while (inputEvent != null) {
-
             switch (inputEvent.getInputDevice()) {
                 case KEYBOARD:
                     switch (inputEvent.getInputAction()) {
@@ -122,45 +132,76 @@ public class MGDExerciseGame extends Game {
                 case TOUCHSCREEN:
                     switch (inputEvent.getInputAction()) {
                         case DOWN:
-                            //Get Y
-                            System.out.println(inputEvent.getValues()[0]);
-                            //GET X
-                            System.out.println(inputEvent.getValues()[1]);
-                            pressed = true;
+                            //System.out.println(inputEvent.getValues()[0]);
 
+                            //COORDINATES JET MATRIX
+                            System.out.println("Matrix X: " + jetObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13] + " Matrix Z: " + jetObject.getMatrix().m[14]);
+                            //COORDINATES JET HITBOX
+                            System.out.print("Circle X: " + jetObject.getHitBoxCircle().getPosition().getX() + " Circle Y: " + jetObject.getHitBoxCircle().getPosition().getY());
+                            //COORDINATES MISSILE
+                            System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
 
-                            Vector3 screenTouchPosition = new Vector3(
-                                    (inputEvent.getValues()[0] / (screenWidth / 2) - 1),
-                                    -(inputEvent.getValues()[1] / (screenHeight / 2) - 1),
-                                    0);
+                            Vector3 screenTouchPosition = new Vector3((inputEvent.getValues()[0] / (screenWidth / 2) - 1), -(inputEvent.getValues()[1] / (screenHeight / 2) - 1), 0);
 
                             Vector3 worldTouchPosition = hudCam.unproject(screenTouchPosition, 1);
 
-                            Point touchPoint = new Point(
-                                    worldTouchPosition.getX(),
-                                    worldTouchPosition.getY());
+                            Point touchPoint = new Point(worldTouchPosition.getX(), worldTouchPosition.getY());
 
-                                if (touchPoint.intersects(aabbTest)){
-                                    counter++;
-                                    yas = true;
-                                    textTest.setText("asdf"+counter);
+                            if(touchPoint.intersects(jetObject.getHitBoxCircle())){
+                                counter++;
+                                yas = true;
+                                textTest.setText("" + counter);
+                            }
 
-                                    System.out.println(aabbTest.getPosition());
-                                }
+                            if(touchPoint.intersects(controlBoxLeft)){
+                                System.out.println("hitbox left");
+                                pressedLeft = true;
+                            }
+
+                            if(touchPoint.intersects(controlBoxRight)){
+                                System.out.println("hitbox right");
+                                pressedRight = true;
+                            }
+
+
                             break;
                         case UP:
-                            pressed = false;
-                            yas = false;
+                            pressedLeft = false;
+                            pressedRight = false;
+                            //yas = false;
                             break;
                     }
                     break;
             }
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
-        }
-        if(pressed){
-            matrixJet.rotateY(deltaSeconds * 25);
-            matrixJet.translate(0, deltaSeconds * 0.8f, 0);
+
+
+            if(pressedLeft){
+                jetObject.getMatrix().translate(-deltaSeconds * 10f, 0, 0);
+                jetObject.updateHitBoxCircle();
+            }
+
+            if(pressedRight) {
+                jetObject.getMatrix().translate(deltaSeconds * 10f, 0, 0);
+                jetObject.updateHitBoxCircle();
+            }
+
+            if (yas) {
+                if(!lock){
+                    //LOCK X Position from Jet for shoot straight upwards
+                    lock = true;
+                    missileObject.getMatrix().m[12] = jetObject.getMatrix().m[12];
+                }
+                //MISSILE SHOOOOOOOT
+                missileObject.getMatrix().rotateY(deltaSeconds * 50);
+                missileObject.getMatrix().translate(0, 0.2f, 0);
+
+                for(JetObject o : boxArray){
+                    o.getMatrix().translate(0, -0.1f, 0);
+                }
+
+            }
         }
     }
 
@@ -170,14 +211,14 @@ public class MGDExerciseGame extends Game {
 
         //Stuff fuer LVL
         graphicsDevice.setCamera(sceneCam);
-        renderer.drawMesh(meshJet, matrixJet, materialJet);
-        renderer.drawMesh(meshBox, matrixBox, materialBox);
-
+        renderer.drawMesh(jetObject.getMesh(), jetObject.getMatrix(), jetObject.getMaterial());
+        //RENDER IF HIT THE jetHitBox
         if(yas){
-            renderer.drawText(textTest, matrixJet);
+            renderer.drawMesh(missileObject.getMesh(), missileObject.getMatrix(), missileObject.getMaterial());
+            for(JetObject o : boxArray){
+                renderer.drawMesh(o.getMesh(), o.getMatrix(), o.getMaterial());
+            }
         }
-
-
 
         //Stuff fue HUD
         graphicsDevice.setCamera(hudCam);
@@ -199,8 +240,18 @@ public class MGDExerciseGame extends Game {
         sceneCam.setProjection(projection);
 
         matrixTest.setIdentity();
-        //matrixTest.translate(-width / 2, height / 2 - 64, 0);
+        matrixTest.translate(-width / 2, height / 2 - 64, 0);
 
+    }
+
+    public ArrayList<JetObject> boxDropper(int amount){
+        ArrayList<JetObject> a = new ArrayList<>();
+        for(int i = 0; i < amount; i++){
+            JetObject o = new JetObject(new Matrix4x4(), new AABB(0,0, 400, 400));
+            o.getMatrix().translate(randfloat(-10, 10), randfloat(25, 500), 0);
+            a.add(o);
+        }
+        return a;
     }
 
 }
