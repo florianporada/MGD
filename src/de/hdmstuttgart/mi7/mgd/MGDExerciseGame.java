@@ -5,8 +5,10 @@ import java.io.InputStream;
 
 import java.lang.System;
 import java.util.ArrayList;
+import java.util.jar.Attributes;
 
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -123,8 +125,11 @@ public class MGDExerciseGame extends Game {
             mediaPlayer = MediaPlayer.create(context, R.raw.game_loop);
         }
         mediaPlayer.start();
-
-        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        soundPool = new SoundPool.Builder().setAudioAttributes(attributes).build();
         clickSound = soundPool.load(context, R.raw.click, 1);
 	}
 
@@ -185,6 +190,7 @@ public class MGDExerciseGame extends Game {
                         case UP:
                             pressedLeft = false;
                             pressedRight = false;
+                            lock = false;
                             //yas = false;
                             break;
                     }
@@ -211,13 +217,14 @@ public class MGDExerciseGame extends Game {
 
             if (yas) {
                 if(!lock){
+                    missileObject.getMatrix().m[12] = jetObject.getMatrix().m[12];
                     //LOCK X Position from Jet for shoot straight upwards
                     lock = true;
-                    missileObject.getMatrix().m[12] = jetObject.getMatrix().m[12];
                 }
                 //MISSILE SHOOOOOOOT
                 missileObject.getMatrix().rotateY(deltaSeconds * 50);
                 missileObject.getMatrix().translate(0, 0.2f, 0);
+
 
                 for(JetObject o : boxArray){
                     o.getMatrix().translate(0, -0.1f, 0);
