@@ -38,13 +38,13 @@ public abstract class GameObject {
         this.hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), 150f);
     }
 
-    public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, View view) throws IOException {
+    public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, Context context) throws IOException {
         InputStream stream;
 
-        stream = view.getContext().getAssets().open(objectPath);
+        stream = context.getAssets().open(objectPath);
         this.mesh = Mesh.loadFromOBJ(stream);
 
-        stream = view.getContext().getAssets().open(texturePath);
+        stream = context.getAssets().open(texturePath);
         material = new Material();
 
         this.material.setTexture(graphicsDevice.createTexture(stream));

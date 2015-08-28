@@ -7,6 +7,7 @@ import java.lang.System;
 import java.util.ArrayList;
 import java.util.jar.Attributes;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -18,10 +19,12 @@ import de.hdmstuttgart.mi7.mgd.collision.AABB;
 import de.hdmstuttgart.mi7.mgd.collision.Circle;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
 import de.hdmstuttgart.mi7.mgd.game.Game;
+import de.hdmstuttgart.mi7.mgd.game.GameState;
 import de.hdmstuttgart.mi7.mgd.gameObject.GameObject;
 import de.hdmstuttgart.mi7.mgd.gameObject.JetObject;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
+import de.hdmstuttgart.mi7.mgd.input.InputSystem;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector2;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
@@ -29,14 +32,14 @@ import de.hdmstuttgart.mmi.mgd.R;
 
 import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randfloat;
 
-public class MGDExerciseGame extends Game {
+public class MGDExerciseGame implements GameState {
 
-	private Camera sceneCam, hudCam;
+    private Camera sceneCam, hudCam;
 
-	private Matrix4x4 matrixTest;
+	private Matrix4x4 matrixTest, projection, view;
     private SpriteFont fontTest;
     private TextBuffer textTest;
-    private AABB controlBoxLeft, controlBoxRight;
+    private AABB controlBoxLeft, controlBoxRight, topLeft;
     private JetObject jetObject, missileObject, tmpObject;
 
     //MEDIAPLAYER
@@ -48,17 +51,19 @@ public class MGDExerciseGame extends Game {
     private int counter;
     private ArrayList<JetObject> boxArray;
 
-	public MGDExerciseGame(View view) {
-		super(view);
-	}
-
-	@Override
-	public void initialize() {
-		Matrix4x4 projection = new Matrix4x4();
-		Matrix4x4 view = new Matrix4x4();
-
+    @Override
+	public void initialize(Game game) {
 //		projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 100f);
 //		view.translate(0, 0, -5);
+
+        //SCENECAM
+        projection = new Matrix4x4();
+        //projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
+        view = new Matrix4x4();
+        view.translate(0, 0, -25);
+        sceneCam = new Camera();
+        sceneCam.setProjection(projection);
+        sceneCam.setView(view);
 
         //HUDCAM
         projection = new Matrix4x4();
@@ -68,18 +73,10 @@ public class MGDExerciseGame extends Game {
         hudCam.setProjection(projection);
         hudCam.setView(view);
 
-        //SCENECAM
-        projection = new Matrix4x4();
-        projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
-        view = new Matrix4x4();
-        view.translate(0, 0, -25);
-        sceneCam = new Camera();
-        sceneCam.setProjection(projection);
-        sceneCam.setView(view);
-
         //CONTROLS
         controlBoxLeft = new AABB(-500, -900, 500, 500);
         controlBoxRight = new AABB(0, -900, 500, 500);
+        topLeft = new AABB(-500, 700, 200, 200);
 
         //GAMEOBJECTS
         jetObject = new JetObject(new Matrix4x4());
@@ -96,18 +93,20 @@ public class MGDExerciseGame extends Game {
     }
 
 	@Override
-	public void loadContent() {
+	public void loadContent(Game game) {
+        Context context = game.getContext();
+        GraphicsDevice graphicsDevice = game.getGraphicsDevice();
 
-		try {
+        try {
             //JET
-            jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, view);
+            jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
-            missileObject.loadObject("box.obj", "box.png", graphicsDevice, view);
+            missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
             //TMP
-            tmpObject.loadObject("box.obj", "box.png", graphicsDevice, view);
+            tmpObject.loadObject("box.obj", "box.png", graphicsDevice, context);
 
             for(JetObject o : boxArray){
-                o.loadObject("box.obj", "box.png", graphicsDevice, view);
+                o.loadObject("box.obj", "box.png", graphicsDevice, context);
             }
         } catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -125,6 +124,8 @@ public class MGDExerciseGame extends Game {
             mediaPlayer = MediaPlayer.create(context, R.raw.game_loop);
         }
         mediaPlayer.start();
+        mediaPlayer.setLooping(true);
+
         AudioAttributes attributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -134,8 +135,9 @@ public class MGDExerciseGame extends Game {
 	}
 
     @Override
-    public void update(float deltaSeconds) {
-        jetObject.updateHitBoxCircle();
+    public void update(Game game, float deltaSeconds) {
+        InputSystem inputSystem = game.getInputSystem();
+
         InputEvent inputEvent = inputSystem.peekEvent();
         while (inputEvent != null) {
             switch (inputEvent.getInputDevice()) {
@@ -162,7 +164,7 @@ public class MGDExerciseGame extends Game {
                             //COORDINATES MISSILE
                             System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
 
-                            Vector3 screenTouchPosition = new Vector3((inputEvent.getValues()[0] / (screenWidth / 2) - 1), -(inputEvent.getValues()[1] / (screenHeight / 2) - 1), 0);
+                            Vector3 screenTouchPosition = new Vector3((inputEvent.getValues()[0] / (game.getScreenWidth() / 2) - 1), -(inputEvent.getValues()[1] / (game.getScreenHeight() / 2) - 1), 0);
 
                             Vector3 worldTouchPosition = hudCam.unproject(screenTouchPosition, 1);
 
@@ -186,11 +188,16 @@ public class MGDExerciseGame extends Game {
                                 pressedRight = true;
                             }
 
+                            if(touchPoint.intersects(topLeft)){
+                                if (mediaPlayer != null)
+                                    mediaPlayer.release();
+                                game.getGameStateManager().setGameState(new MGDMenuState());
+                            }
+
                             break;
                         case UP:
                             pressedLeft = false;
                             pressedRight = false;
-                            lock = false;
                             //yas = false;
                             break;
                     }
@@ -235,7 +242,10 @@ public class MGDExerciseGame extends Game {
     }
 
 	@Override
-    public void draw(float deltaSeconds) {
+    public void draw(Game game, float deltaSeconds) {
+        GraphicsDevice graphicsDevice = game.getGraphicsDevice();
+        Renderer renderer = game.getRenderer();
+
         graphicsDevice.clear(0.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
         //Stuff fuer LVL
@@ -256,7 +266,7 @@ public class MGDExerciseGame extends Game {
     }
 
 	@Override
-	public void resize(int width, int height) {
+	public void resize(Game game, int width, int height) {
         float aspect = (float)width / (float)height;
         Matrix4x4 projection;
 
@@ -274,14 +284,19 @@ public class MGDExerciseGame extends Game {
     }
 
     @Override
-    public void resume() {
+    public void resume(Game game) {
 
     }
 
     @Override
-    public void pause() {
+    public void pause(Game game) {
         if (mediaPlayer != null)
         	mediaPlayer.pause();
+    }
+
+    @Override
+    public void shutdown(Game game) {
+
     }
 
     public ArrayList<JetObject> boxDropper(int amount){

@@ -30,8 +30,8 @@ public class JetObject extends GameObject{
     }
 
     @Override
-    public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, View view) throws IOException {
-        super.loadObject(objectPath, texturePath, graphicsDevice, view);
+    public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, Context context) throws IOException {
+        super.loadObject(objectPath, texturePath, graphicsDevice, context);
     }
 
     @Override

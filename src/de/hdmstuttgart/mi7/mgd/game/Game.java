@@ -1,5 +1,6 @@
 package de.hdmstuttgart.mi7.mgd.game;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.View;
@@ -13,7 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created by florianporada on 25.08.15.
  */
-public abstract class Game implements GLSurfaceView.Renderer {
+public class Game implements GLSurfaceView.Renderer {
     private boolean initialized;
     private long lastTime;
 
@@ -25,12 +26,17 @@ public abstract class Game implements GLSurfaceView.Renderer {
     protected int screenWidth;
     protected int screenHeight;
 
+    protected GameStateManager gameStateManager;
+
 
     public Game(View view) {
         this.view = view;
         this.context = view.getContext();
-
+        this.screenWidth = 1;
+        this.screenHeight = 1;
         inputSystem = new InputSystem(view);
+        this.inputSystem = new InputSystem(view);
+        this.gameStateManager = new GameStateManager(this);
     }
 
     @Override
@@ -72,11 +78,74 @@ public abstract class Game implements GLSurfaceView.Renderer {
         lastTime = currTime;
     }
 
-    public abstract void initialize();
-    public abstract void update(float deltaSeconds);
-    public abstract void draw(float deltaSeconds);
-    public abstract void resize(int width, int height);
-    public abstract void loadContent();
-    public abstract void pause();
-    public abstract void resume();
+    public Context getContext(){
+        return context;
+    }
+
+    public GameStateManager getGameStateManager() {
+        return gameStateManager;
+    }
+
+    public GraphicsDevice getGraphicsDevice() {
+        return graphicsDevice;
+    }
+
+    public InputSystem getInputSystem() {
+        return inputSystem;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void finish() {
+        view.post(new Runnable() {
+            public void run() {
+                ((Activity)context).finish();
+            }
+        });
+    }
+
+    public void initialize() {
+    }
+
+    public void loadContent() {
+        gameStateManager.loadContent();
+    }
+
+    public void update(float deltaSeconds) {
+        gameStateManager.update(deltaSeconds);
+    }
+
+    public void draw(float deltaSeconds) {
+        gameStateManager.draw(deltaSeconds);
+    }
+
+    public void resize(int width, int height) {
+        gameStateManager.resize(width, height);
+    }
+
+    public void pause() {
+        gameStateManager.pause();
+    }
+
+    public void resume() {
+        gameStateManager.resume();
+    }
 }
