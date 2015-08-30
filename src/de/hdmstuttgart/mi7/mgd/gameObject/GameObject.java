@@ -45,7 +45,7 @@ public abstract class GameObject {
         this.mesh = Mesh.loadFromOBJ(stream);
 
         stream = context.getAssets().open(texturePath);
-        material = new Material();
+        this.material = new Material();
 
         this.material.setTexture(graphicsDevice.createTexture(stream));
     }
@@ -91,6 +91,11 @@ public abstract class GameObject {
     }
 
     public void updateHitBoxCircle(){
-        hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), 200f);
+        hitBoxCircle = new Circle(new Vector2(matrix.m[12] * 19, matrix.m[13] * 19), 200f);
+    }
+
+    public void updateHitBoxAABB() {
+        hitBoxAABB = new AABB(this.matrix.m[12], this.matrix.m[13], 90, 90);
+
     }
 }

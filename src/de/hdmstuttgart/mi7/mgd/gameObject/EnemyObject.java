@@ -8,35 +8,33 @@ import de.hdmstuttgart.mi7.mgd.graphics.GraphicsDevice;
 import de.hdmstuttgart.mi7.mgd.graphics.Material;
 import de.hdmstuttgart.mi7.mgd.graphics.Mesh;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
-import de.hdmstuttgart.mi7.mgd.math.Vector2;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
- * Created by florianporada on 27.08.15.
+ * Created by florianporada on 29.08.15.
  */
-public class JetObject extends GameObject{
-    private float controlSpeed = 0.05f;
+public class EnemyObject extends GameObject {
+    private float speed = -0.09f;
 
-    public JetObject(View view) {
+    public EnemyObject(View view) {
         super(view);
     }
 
-    public JetObject(Matrix4x4 matrix, AABB aabb) {
+    public EnemyObject(Matrix4x4 matrix, AABB aabb) {
         super(matrix, aabb);
     }
 
-    public JetObject(Matrix4x4 matrix) {
+    public EnemyObject(Matrix4x4 matrix) {
         super(matrix);
     }
 
-    public float getControlSpeed() {
-        return controlSpeed;
+    public float getSpeed() {
+        return speed;
     }
 
-    public void setControlSpeed(float controlSpeed) {
-        this.controlSpeed = controlSpeed;
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 
     @Override
@@ -97,10 +95,5 @@ public class JetObject extends GameObject{
     @Override
     public void updateHitBoxCircle() {
         super.updateHitBoxCircle();
-    }
-
-    @Override
-    public void updateHitBoxAABB() {
-        super.updateHitBoxAABB();
     }
 }

@@ -21,7 +21,7 @@ import de.hdmstuttgart.mmi.mgd.R;
  */
 public class MGDMenuState implements GameState {
 
-    private Camera hudCam, sceneCam;
+    private Camera menuCam;
 
     private SpriteFont fontTitle;
     private TextBuffer textTitle;
@@ -43,19 +43,12 @@ public class MGDMenuState implements GameState {
         float height = game.getScreenHeight();
 
         projection = new Matrix4x4();
-        projection.setOrhtogonalProjection(-100f, 100f, -100f, 100f, 0.0f, 100.0f);
-        view = new Matrix4x4();
-        hudCam = new Camera();
-        hudCam.setProjection(projection);
-        hudCam.setView(view);
-
-        projection = new Matrix4x4();
         projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
+        //projection.setOrhtogonalProjection(-100f, 100f, -100f, 100f, 0.0f, 100.0f);
         view = new Matrix4x4();
-        view.translate(0, 0, -25);
-        sceneCam = new Camera();
-        sceneCam.setProjection(projection);
-        sceneCam.setView(view);
+        menuCam = new Camera();
+        menuCam.setProjection(projection);
+        menuCam.setView(view);
 
         matTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
 
@@ -68,7 +61,7 @@ public class MGDMenuState implements GameState {
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 16);
         textTitle.setText("DrivingSim");
 
-        fontMenu = graphicsDevice.createSpriteFont(null, 20);
+        fontMenu = graphicsDevice.createSpriteFont(null, 64);
         textMenu = new TextBuffer[]{
                 graphicsDevice.createTextBuffer(fontMenu, 16),
                 graphicsDevice.createTextBuffer(fontMenu, 16),
@@ -81,17 +74,17 @@ public class MGDMenuState implements GameState {
         textMenu[3].setText("Quit");
 
         matMenu = new Matrix4x4[]{
-                Matrix4x4.createTranslation(0, -50, 0),
-                Matrix4x4.createTranslation(0, -80, 0),
-                Matrix4x4.createTranslation(0, -110, 0),
-                Matrix4x4.createTranslation(0, -140, 0)
+                Matrix4x4.createTranslation(0, 0, 0),
+                Matrix4x4.createTranslation(0, -64, 0),
+                Matrix4x4.createTranslation(0, -128, 0),
+                Matrix4x4.createTranslation(0, -192, 0)
         };
 
         aabbMenu = new AABB[]{
-                new AABB(0, -50, 120, 16),
-                new AABB(0, -80, 120, 16),
-                new AABB(0, -110, 120, 16),
-                new AABB(0, -140, 120, 16)
+                new AABB(0, 0, 120, 64),
+                new AABB(0, -64, 120, 64),
+                new AABB(0, -128, 120, 64),
+                new AABB(0, -192, 120, 64)
         };
 
         Context context = game.getContext();
@@ -128,7 +121,7 @@ public class MGDMenuState implements GameState {
                                     -(inputEvent.getValues()[1] / (screenHeight / 2) - 1),
                                     0);
 
-                            Vector3 worldTouchPosition = hudCam.unproject(screenTouchPosition, 1);
+                            Vector3 worldTouchPosition = menuCam.unproject(screenTouchPosition, 1);
 
                             Point touchPoint = new Point(
                                     worldTouchPosition.getX(),
@@ -158,7 +151,7 @@ public class MGDMenuState implements GameState {
 
         graphicsDevice.clear(0.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
-        graphicsDevice.setCamera(hudCam);
+        graphicsDevice.setCamera(menuCam);
         renderer.drawText(textTitle, matTitle);
         for (int i = 0; i < textMenu.length; ++i)
             renderer.drawText(textMenu[i], matMenu[i]);
@@ -170,11 +163,7 @@ public class MGDMenuState implements GameState {
 
         projection = new Matrix4x4();
         projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
-        hudCam.setProjection(projection);
-
-        projection = new Matrix4x4();
-        projection.setPerspectiveProjection(-0.1f * aspect, 0.1f * aspect, -0.1f, 0.1f, 0.1f, 100.0f);
-        sceneCam.setProjection(projection);
+        menuCam.setProjection(projection);
 
         matTitle.setIdentity();
         matTitle.translate(-width / 2, height / 2 - 64, 0);
