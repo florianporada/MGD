@@ -19,12 +19,12 @@ public class WeaponObject extends GameObject {
         super(view);
     }
 
-    public WeaponObject(Matrix4x4 matrix, AABB aabb) {
-        super(matrix, aabb);
+    public WeaponObject(Matrix4x4 matrix, float hitboxWidth, float hitboxHeight) {
+        super(matrix, hitboxWidth, hitboxHeight);
     }
 
-    public WeaponObject(Matrix4x4 matrix) {
-        super(matrix);
+    public WeaponObject(Matrix4x4 matrix, float hitboxRadius) {
+        super(matrix, hitboxRadius);
     }
 
     @Override
@@ -85,5 +85,10 @@ public class WeaponObject extends GameObject {
     @Override
     public void updateHitBoxCircle() {
         super.updateHitBoxCircle();
+    }
+
+    @Override
+    public void updateHitBoxAABB() {
+        super.updateHitBoxAABB();
     }
 }

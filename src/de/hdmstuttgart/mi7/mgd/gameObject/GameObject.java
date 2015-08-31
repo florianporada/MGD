@@ -24,18 +24,22 @@ public abstract class GameObject {
     private Material material;
     private AABB hitBoxAABB;
     private Circle hitBoxCircle;
+    private float hitboxWidth, hitboxHeight, hitboxRadius;
 
     public GameObject(View view){
         this.context = view.getContext();
     }
 
-    public GameObject(Matrix4x4 matrix, AABB aabb) {
+    public GameObject(Matrix4x4 matrix, float hitBoxWidth, float hitboxHeight) {
         this.matrix = matrix;
-        this.hitBoxAABB = aabb;}
+        this.hitboxWidth = hitBoxWidth;
+        this.hitboxHeight = hitboxHeight;
+        this.hitBoxAABB = new AABB(matrix.m[12]-(hitBoxWidth/2), matrix.m[13]-(hitboxHeight/2), hitBoxWidth, hitboxHeight);}
 
-    public GameObject(Matrix4x4 matrix) {
+    public GameObject(Matrix4x4 matrix, float hitBoxRadius) {
         this.matrix = matrix;
-        this.hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), 150f);
+        this.hitboxRadius = hitBoxRadius;
+        this.hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), hitBoxRadius);
     }
 
     public void loadObject(String objectPath, String texturePath, GraphicsDevice graphicsDevice, Context context) throws IOException {
@@ -91,11 +95,11 @@ public abstract class GameObject {
     }
 
     public void updateHitBoxCircle(){
-        hitBoxCircle = new Circle(new Vector2(matrix.m[12] * 19, matrix.m[13] * 19), 200f);
+        hitBoxCircle = new Circle(new Vector2(matrix.m[12], matrix.m[13]), hitboxRadius);
     }
 
     public void updateHitBoxAABB() {
-        hitBoxAABB = new AABB(this.matrix.m[12], this.matrix.m[13], 90, 90);
+        hitBoxAABB = new AABB(this.matrix.m[12]-(hitboxWidth/2), this.matrix.m[13]-(hitboxHeight/2), hitboxWidth, hitboxHeight );
 
     }
 }

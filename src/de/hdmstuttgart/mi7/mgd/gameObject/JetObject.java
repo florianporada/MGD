@@ -18,17 +18,18 @@ import java.io.InputStream;
  */
 public class JetObject extends GameObject{
     private float controlSpeed = 0.05f;
+    private float radius;
 
     public JetObject(View view) {
         super(view);
     }
 
-    public JetObject(Matrix4x4 matrix, AABB aabb) {
-        super(matrix, aabb);
+    public JetObject(Matrix4x4 matrix, float hitboxWidth, float hitboxHeight) {
+        super(matrix, hitboxWidth, hitboxHeight);
     }
 
-    public JetObject(Matrix4x4 matrix) {
-        super(matrix);
+    public JetObject(Matrix4x4 matrix, float hitboxRadius) {
+        super(matrix, hitboxRadius);
     }
 
     public float getControlSpeed() {

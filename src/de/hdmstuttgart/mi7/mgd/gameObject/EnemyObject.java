@@ -16,17 +16,18 @@ import java.io.IOException;
  */
 public class EnemyObject extends GameObject {
     private float speed = -0.09f;
+    private boolean alive = true;
 
     public EnemyObject(View view) {
         super(view);
     }
 
-    public EnemyObject(Matrix4x4 matrix, AABB aabb) {
-        super(matrix, aabb);
+    public EnemyObject(Matrix4x4 matrix, float hitboxWidth, float hitboxHeight) {
+        super(matrix, hitboxWidth, hitboxHeight);
     }
 
-    public EnemyObject(Matrix4x4 matrix) {
-        super(matrix);
+    public EnemyObject(Matrix4x4 matrix, float hitboxRadius) {
+        super(matrix, hitboxRadius);
     }
 
     public float getSpeed() {
@@ -35,6 +36,14 @@ public class EnemyObject extends GameObject {
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override
@@ -95,5 +104,10 @@ public class EnemyObject extends GameObject {
     @Override
     public void updateHitBoxCircle() {
         super.updateHitBoxCircle();
+    }
+
+    @Override
+    public void updateHitBoxAABB() {
+        super.updateHitBoxAABB();
     }
 }
