@@ -44,10 +44,13 @@ public class MGDExerciseGame implements GameState {
     //DECLARE CONTROLBOXES
     private AABB controlLeftBox, controlRightBox, topLeft,topRight;
     //OTHER BOXES
-    private AABB testBox, bottomLineBox;
+    private AABB bottomLineBox;
 
+    //GAMEOBJECTS
     private JetObject jetObject, tmpObject;
     private WeaponObject missileObject;
+
+    private String[][] randomEnemyObjects = {{"cow.obj", "sphere.bmp",}, {"icosahedron.obj", "tree.png"}, {"teapot.obj", "road.png"}, {"box.obj", "box.png"}};
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -100,23 +103,24 @@ public class MGDExerciseGame implements GameState {
         atBottomB = false;
         boxArrayA = boxDropper(10);
         boxArrayB = boxDropper(10);
-        for(EnemyObject o : boxArrayA){
-            System.out.println(o.getMatrix().m[13]);
-        }
-        System.out.println("Min: "+MathHelper.getMinValueIndex(boxArrayA));
+        //SHOW INDEX OF LOWES BOX
+//        for(EnemyObject o : boxArrayA){
+//            System.out.println(o.getMatrix().m[13]);
+//        }
+//        System.out.println("Min: "+MathHelper.getMinValueIndex(boxArrayA));
 
         //HITBOXEN
-        //testBox = new AABB(0, 0, 10, 10);
         bottomLineBox = new AABB(-25, -41, 50, 0.01f);
 
         //TEXT
-        matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
+        matrixTest = new Matrix4x4().createTranslation(20, 35, 0);
 
 
         //GAMEOBJECTS
         jetObject = new JetObject(new Matrix4x4().createTranslation(0, -15f, 0), 5f, 5f);
         //jetObject.getMatrix().scale(0.7f);
         missileObject = new WeaponObject(new Matrix4x4().createTranslation(0, -15f, 0), 20f, 20f);
+
 
         //INITIALIZE MISSILE ARRAY AND MISSILELOCK
         missileArray = new ArrayList<>();
@@ -129,6 +133,7 @@ public class MGDExerciseGame implements GameState {
         tmpObject = new JetObject(new Matrix4x4(), 20f, 20f);
         tmpObject.getMatrix().translate(-10, 25,0);
         //executorService.scheduleAtFixedRate(boxRandomizer(boxArrayA), 0, 7, TimeUnit.SECONDS);
+
 
     }
 
@@ -155,20 +160,23 @@ public class MGDExerciseGame implements GameState {
 
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
-                o.loadObject("box.obj", "box.png", graphicsDevice, context);
+                int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));
+                o.loadObject(randomEnemyObjects[i][0], randomEnemyObjects[i][1], graphicsDevice, context);
             }
 
             //LOAD BOX B ARRAY
             for(EnemyObject o : boxArrayB){
-                o.loadObject("tree.obj", "tree.png", graphicsDevice, context);
+                int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));
+                o.loadObject(randomEnemyObjects[i][0], randomEnemyObjects[i][1], graphicsDevice, context);
             }
+
         } catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-        fontTest = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 64);
-        textTest = graphicsDevice.createTextBuffer(fontTest, 16);
+        fontTest = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 3);
+        textTest = graphicsDevice.createTextBuffer(fontTest, 64);
         textTest.setText("Stahp!");
 
         //LOAD MEDIAPLAYER

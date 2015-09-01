@@ -16,7 +16,7 @@ public class MGDExerciseView extends GLSurfaceView {
         // TODO Auto-generated constructor stub
         game = new Game(this);
 
-        game.getGameStateManager().setGameState(new MGDExerciseGame());
+        game.getGameStateManager().setGameState(new MGDMenuState());
 
         setRenderer(game);
         setRenderMode(RENDERMODE_CONTINUOUSLY);
