@@ -1,5 +1,9 @@
 package de.hdmstuttgart.mi7.mgd.math;
 
+import de.hdmstuttgart.mi7.mgd.gameObject.EnemyObject;
+import de.hdmstuttgart.mi7.mgd.gameObject.GameObject;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -23,5 +27,17 @@ public class MathHelper {
         float randomNum = rand.nextFloat() * (max - min) + min;
 
         return randomNum;
+    }
+
+    public static int getMinValueIndex(ArrayList<EnemyObject> array){
+        int minIndex = 0;
+        float minValue = array.get(0).getMatrix().m[13];
+        for(int i=1;i<array.size();i++){
+            if(array.get(i).getMatrix().m[13] < minValue){
+                minValue = array.get(i).getMatrix().m[13];
+                minIndex = i;
+            }
+        }
+        return minIndex;
     }
 }

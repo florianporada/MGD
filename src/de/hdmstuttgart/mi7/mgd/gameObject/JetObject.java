@@ -17,8 +17,7 @@ import java.io.InputStream;
  * Created by florianporada on 27.08.15.
  */
 public class JetObject extends GameObject{
-    private float controlSpeed = 0.05f;
-    private float radius;
+    private float controlSpeed = 0.1f;
 
     public JetObject(View view) {
         super(view);

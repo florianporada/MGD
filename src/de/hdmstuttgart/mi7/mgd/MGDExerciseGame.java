@@ -23,6 +23,7 @@ import de.hdmstuttgart.mi7.mgd.gameObject.WeaponObject;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.input.InputSystem;
+import de.hdmstuttgart.mi7.mgd.math.MathHelper;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
 import de.hdmstuttgart.mmi.mgd.R;
@@ -54,7 +55,10 @@ public class MGDExerciseGame implements GameState {
     private int clickSound;
 
     //CONTROL BOOLEANS
-    private boolean pressedLeft = false, pressedRight = false;
+    private boolean pressedLeft , pressedRight;
+    //BOXGENERATOR BOOLEANS
+    private boolean atBottomA, atBottomB;
+
     private boolean yas = false, lock = false, clockLock = false, startGame = false;
     private boolean missileLock[];
     private int counter, missileCounter;
@@ -63,7 +67,7 @@ public class MGDExerciseGame implements GameState {
 
     //TEST
     final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    float boxTimeA = 1, boxTimeB = -2;
+    float boxTimeB = 0;
 
 
     @Override
@@ -82,23 +86,31 @@ public class MGDExerciseGame implements GameState {
         sceneCam.setProjection(projection);
         sceneCam.setView(view);
 
-        //HUDCAM
-//        projection = new Matrix4x4();
-//        projection.setOrhtogonalProjection(-100f, 100f, -100f, 100f, 0.0f, 100.0f);
-//        view = new Matrix4x4();
-//        hudCam = new Camera();
-//        hudCam.setProjection(projection);
-//        hudCam.setView(view);
 
         //CONTROLS
+        pressedLeft = false;
+        pressedRight = false;
         controlRightBox = new AABB(0, -40f,22f, 25f);
         controlLeftBox = new AABB(-22f, -40f,22f, 25f);
-        topLeft = new AABB(-22f, 30, 22f, 10f);
-        topRight = new AABB(0, 30, 22f, 10f);
+        topLeft = new AABB(-22f, 30f, 22f, 10f);
+        topRight = new AABB(0, 30f, 22f, 10f);
+
+        //INIT BOXES AND SET BOOL
+        atBottomA = false;
+        atBottomB = false;
+        boxArrayA = boxDropper(10);
+        boxArrayB = boxDropper(10);
+        for(EnemyObject o : boxArrayA){
+            System.out.println(o.getMatrix().m[13]);
+        }
+        System.out.println("Min: "+MathHelper.getMinValueIndex(boxArrayA));
 
         //HITBOXEN
         //testBox = new AABB(0, 0, 10, 10);
-        bottomLineBox = new AABB(-25, -41, 50, 1);
+        bottomLineBox = new AABB(-25, -41, 50, 0.01f);
+
+        //TEXT
+        matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
 
 
         //GAMEOBJECTS
@@ -116,10 +128,6 @@ public class MGDExerciseGame implements GameState {
 
         tmpObject = new JetObject(new Matrix4x4(), 20f, 20f);
         tmpObject.getMatrix().translate(-10, 25,0);
-
-        //RANDOM BOXES
-        boxArrayA = boxDropper(1);
-        boxArrayB = boxDropper(1);
         //executorService.scheduleAtFixedRate(boxRandomizer(boxArrayA), 0, 7, TimeUnit.SECONDS);
 
     }
@@ -152,7 +160,7 @@ public class MGDExerciseGame implements GameState {
 
             //LOAD BOX B ARRAY
             for(EnemyObject o : boxArrayB){
-                o.loadObject("box.obj", "box.png", graphicsDevice, context);
+                o.loadObject("tree.obj", "tree.png", graphicsDevice, context);
             }
         } catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -162,8 +170,6 @@ public class MGDExerciseGame implements GameState {
         fontTest = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 64);
         textTest = graphicsDevice.createTextBuffer(fontTest, 16);
         textTest.setText("Stahp!");
-
-        matrixTest = Matrix4x4.createTranslation(0, 0, 0);
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
@@ -200,39 +206,30 @@ public class MGDExerciseGame implements GameState {
                 case TOUCHSCREEN:
                     switch (inputEvent.getInputAction()) {
                         case DOWN:
-                            //COORDINATES JET MATRIX
-                            System.out.println("Matrix X: " + jetObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13] + " Matrix Z: " + jetObject.getMatrix().m[14]);
-                            //COORDINATES JET HITBOX
-//                            System.out.println("Circle X: " + jetObject.getHitBoxCircle().getPosition().getX() + " Circle Y: " + jetObject.getHitBoxCircle().getPosition().getY());
-                            //COORDINATES MISSILE
-                            System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
-
                             Vector3 screenTouchPosition = new Vector3((inputEvent.getValues()[0] / (game.getScreenWidth() / 2) - 1), -(inputEvent.getValues()[1] / (game.getScreenHeight() / 2) - 1), 0);
 
                             Vector3 worldTouchPosition = sceneCam.unproject(screenTouchPosition, 1);
-                            //Vector3 worldTouchPosition = sceneCam.unproject(screenTouchPosition, 1);
-
 
                             Point touchPoint = new Point(worldTouchPosition.getX(), worldTouchPosition.getY());
 
+                            //COORDINATES JET MATRIX
+                            System.out.println("Jet X: " + jetObject.getMatrix().m[12] + " Jet Y: " + jetObject.getMatrix().m[13] + " Jet Z: " + jetObject.getMatrix().m[14]);
+                            //COORDINATES MISSILE
+                            System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
+                            //COORDINATES TOUCH
                             System.out.println("WorldTouch X: "+worldTouchPosition.getX()+" WorldTouch Y: "+worldTouchPosition.getY());
-                            System.out.println("Jet X: "+jetObject.getMatrix().m[12]+" Jet Y: "+jetObject.getMatrix().m[13]);
-
 
                             if(touchPoint.intersects(topRight)){
                                 if (soundPool != null)
                                     soundPool.play(clickSound, 1, 1, 0, 0, 1);
-                                counter++;
                                 yas = true;
                                 startGame = true;
-                                textTest.setText("" + counter);
-                                //COORDINATES JET MATRIX
-                                System.out.println("Matrix X: " + jetObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13] + " Matrix Z: " + jetObject.getMatrix().m[14]);
-                                //COORDINATES JET HITBOX
-                                System.out.println("Circle X: " + jetObject.getHitBoxAABB().getPosition().getX() + " Circle Y: " + jetObject.getHitBoxAABB().getPosition().getY());
-                                //COORDINATES MISSILE
-                                System.out.println("Missile X: " + missileObject.getMatrix().m[12] + " Matrix Y: " + jetObject.getMatrix().m[13]+" Matrix Z: "+jetObject.getMatrix().m[14]);
+                            }
 
+                            if(touchPoint.intersects(topLeft)){
+                                if (mediaPlayer != null)
+                                    mediaPlayer.release();
+                                game.getGameStateManager().setGameState(new MGDMenuState());
                             }
 
                             if(touchPoint.intersects(controlLeftBox)){
@@ -245,52 +242,57 @@ public class MGDExerciseGame implements GameState {
                                 pressedRight = true;
                             }
 
-                            if(touchPoint.intersects(jetObject.getHitBoxAABB())){
-                                System.out.println("topRight");
+                            if(touchPoint.intersects(jetObject.getHitBoxAABB())) {
                                 if (soundPool != null)
                                     soundPool.play(clickSound, 1, 1, 0, 0, 1);
-                                jetObject.setControlSpeed(0.095f);
-                                boxRandomizer(boxArrayB, 20, 50);
-                            }
-
-                            if(touchPoint.intersects(topLeft)){
-                                if (mediaPlayer != null)
-                                    mediaPlayer.release();
-                                game.getGameStateManager().setGameState(new MGDMenuState());
                             }
 
                             break;
                         case UP:
                             pressedLeft = false;
                             pressedRight = false;
-                            //yas = false;
                             break;
                     }
                     break;
             }
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
-
-            for(EnemyObject o : boxArrayA){
-                if(jetObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && o.isAlive()){
-                    o.setAlive(false);
-                    System.out.println("peng!!");
-                }
-
-            }
-
-
+            //CONTROLS
             if(pressedLeft){
                 jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
                 jetObject.getMatrix().rotateY(-0.1f);
                 jetObject.updateHitBoxAABB();
             }
 
-
             if(pressedRight) {
                 jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
                 jetObject.getMatrix().rotateY(0.1f);
                 jetObject.updateHitBoxAABB();
+            }
+
+            //DETECT COLLISION JET and BOXES
+            for(EnemyObject o : boxArrayA){
+                if(jetObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && o.isAlive()){
+                    o.setAlive(false);
+                    counter++;
+                    textTest.setText("" + counter);
+                    System.out.println("peng!!");
+                }
+            }
+
+            for(EnemyObject o : boxArrayB){
+                if(jetObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && o.isAlive()){
+                    o.setAlive(false);
+                    counter++;
+                    textTest.setText("" + counter);
+                    System.out.println("peng!!");
+                }
+            }
+
+            //RESET ALIVE STATUS FOR BOXARRAY A
+            for(EnemyObject o : boxArrayA){
+                if(bottomLineBox.intersects(o.getHitBoxAABB()))
+                    o.setAlive(true);
             }
 
 
@@ -304,31 +306,29 @@ public class MGDExerciseGame implements GameState {
                 }
                 boxTimeB = boxTimeB + deltaSeconds/10;
                 if(boxTimeB > 0.5){
-                    System.out.println("reset clock B");
                     missileObject.setMatrix(new Matrix4x4());
-
                     lock = false;
                     boxTimeB = 0;
                 }
 
-                if(!missileLock[missileCounter]){
-                    for(WeaponObject w : missileArray){
-                        w.getMatrix().m[12] = jetObject.getMatrix().m[12];
-                        missileLock[missileCounter] = true;
-                        //missileCounter++;
-                    }
-                }
-
-                if(missileCounter > missileArray.size()){
-                    missileCounter = 0;
-                }
-
-                if(missileLock[missileCounter]){
-                    for(WeaponObject w: missileArray){
-                        w.getMatrix().rotateY(deltaSeconds * 50);
-                        w.getMatrix().translate(0, 0.2f, 0);
-                    }
-                }
+//                if(!missileLock[missileCounter]){
+//                    for(WeaponObject w : missileArray){
+//                        w.getMatrix().m[12] = jetObject.getMatrix().m[12];
+//                        missileLock[missileCounter] = true;
+//                        //missileCounter++;
+//                    }
+//                }
+//
+//                if(missileCounter > missileArray.size()){
+//                    missileCounter = 0;
+//                }
+//
+//                if(missileLock[missileCounter]){
+//                    for(WeaponObject w: missileArray){
+//                        w.getMatrix().rotateY(deltaSeconds * 50);
+//                        w.getMatrix().translate(0, 0.2f, 0);
+//                    }
+//                }
 
 
                 //MISSILE SHOOOOOOOT
@@ -336,32 +336,44 @@ public class MGDExerciseGame implements GameState {
                 missileObject.getMatrix().translate(0, 0.2f, 0);
 
 
+                //BOXES FROM TOP TO BOTTOM
                 for(EnemyObject o : boxArrayA) {
                     o.getMatrix().translate(0, o.getSpeed(), 0);
+                    o.getMatrix().rotateY(MathHelper.randfloat(0.02f, 0.8f));
                     o.updateHitBoxAABB();
                 }
 
                 for(EnemyObject o : boxArrayB) {
                     o.getMatrix().translate(0, o.getSpeed(), 0);
+                    o.getMatrix().rotateY(MathHelper.randfloat(0.02f, 0.1f));
                     o.updateHitBoxAABB();
                 }
 
-                boxTimeA = boxTimeA + deltaSeconds/10;
-                if(boxTimeA > 1.7){
-                    System.out.println("reset clock A");
-                    boxRandomizer(boxArrayA, 20, 50);
-                    boxTimeA = 0;
+                //GET LOWEST OBJECT FROM BOXARRAY A
+                if(bottomLineBox.intersects(boxArrayA.get(MathHelper.getMinValueIndex(boxArrayA)).getHitBoxAABB())){
+                    atBottomA = true;
+                    //System.out.println("BOX A IS AT THE BOTTOM");
                 }
-                for(EnemyObject o : boxArrayA){
-                    if(bottomLineBox.intersects(o.getHitBoxAABB()))
-                        o.setAlive(true);
+
+                //GET LOWEST OBJECT FROM BOXARRAY B
+                if(bottomLineBox.intersects(boxArrayB.get(MathHelper.getMinValueIndex(boxArrayB)).getHitBoxAABB())){
+                    atBottomB = true;
+                    //System.out.println("BOX B IS AT THE BOTTOM");
                 }
-//                boxTimeB = boxTimeB + deltaSeconds/10;
-//                if(boxTimeB > 2){
-//                    System.out.println("reset clock B");
-//                    boxRandomizer(boxArrayB, 25, 50);
-//                    boxTimeB = 0;
-//                }
+
+                //TRIGGER OTHER ARRAY
+                if(atBottomA && !atBottomB){
+                    boxRandomizer(boxArrayB, 40, 120);
+                    atBottomA = false;
+                    //System.out.println("trigger boxArrayB");
+                }
+
+                //TRIGGER OTHER ARRAY
+                if(atBottomB && !atBottomA){
+                    boxRandomizer(boxArrayA, 40, 120);
+                    atBottomB = false;
+                    //System.out.println("trigger boxArrayA");
+                }
             }
 
 
@@ -386,6 +398,7 @@ public class MGDExerciseGame implements GameState {
         renderer.drawText(textTest, matrixTest);
 
 
+
         for(EnemyObject o : boxArrayA){
             renderer.drawMesh(o.getMesh(), o.getMatrix(), o.getMaterial());
         }
@@ -401,10 +414,6 @@ public class MGDExerciseGame implements GameState {
                 renderer.drawMesh(w.getMesh(), w.getMatrix(), w.getMaterial());
             }
         }
-
-        //Stuff fue HUD
-//        graphicsDevice.setCamera(hudCam);
-//        renderer.drawText(textTest, matrixTest);
 
     }
 
@@ -460,7 +469,7 @@ public class MGDExerciseGame implements GameState {
 
     public void boxRandomizer(ArrayList<EnemyObject> b, float minY, float maxY){
         for(EnemyObject o : b){
-            o.setMatrix(new Matrix4x4().createTranslation(randfloat(-10, 10), randfloat(minY, maxY), 0));
+            o.setMatrix(new Matrix4x4().createTranslation(randfloat(-25, 25), randfloat(minY, maxY), 0));
         }
     }
 
