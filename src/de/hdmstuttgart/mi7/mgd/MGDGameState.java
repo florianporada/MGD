@@ -30,7 +30,7 @@ import de.hdmstuttgart.mmi.mgd.R;
 
 import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randfloat;
 
-public class MGDExerciseGame implements GameState {
+public class MGDGameState implements GameState {
     private GraphicsDevice graphicsDevice;
     private Context context;
     Renderer renderer;
@@ -45,6 +45,7 @@ public class MGDExerciseGame implements GameState {
     private AABB controlLeftBox, controlRightBox, topLeft,topRight;
     //OTHER BOXES
     private AABB bottomLineBox;
+    private AABB gameBox;
 
     //GAMEOBJECTS
     private JetObject jetObject, tmpObject;
@@ -111,9 +112,10 @@ public class MGDExerciseGame implements GameState {
 
         //HITBOXEN
         bottomLineBox = new AABB(-25, -41, 50, 0.01f);
+        gameBox = new AABB(-25, -40, 50, 80);
 
         //TEXT
-        matrixTest = new Matrix4x4().createTranslation(20, 35, 0);
+        matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
 
 
         //GAMEOBJECTS
@@ -175,8 +177,8 @@ public class MGDExerciseGame implements GameState {
 			e.printStackTrace();
 		}
 
-        fontTest = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 3);
-        textTest = graphicsDevice.createTextBuffer(fontTest, 64);
+        fontTest = graphicsDevice.createSpriteFont(null, 16);
+        textTest = graphicsDevice.createTextBuffer(fontTest, 66);
         textTest.setText("Stahp!");
 
         //LOAD MEDIAPLAYER
@@ -342,6 +344,14 @@ public class MGDExerciseGame implements GameState {
                 //MISSILE SHOOOOOOOT
                 missileObject.getMatrix().rotateY(deltaSeconds * 50);
                 missileObject.getMatrix().translate(0, 0.2f, 0);
+
+
+                //STAY IN GAMEBOX
+                if(!jetObject.getHitBoxAABB().intersects(gameBox)){
+                    System.out.println("come back inside!!!");
+                }else{
+
+                }
 
 
                 //BOXES FROM TOP TO BOTTOM

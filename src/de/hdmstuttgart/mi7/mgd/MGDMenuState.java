@@ -2,7 +2,6 @@ package de.hdmstuttgart.mi7.mgd;
 
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
@@ -188,7 +187,7 @@ public class MGDMenuState implements GameState {
         switch (i) {
             case 0:
                 mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDExerciseGame());
+                game.getGameStateManager().setGameState(new MGDGameState());
                 break;
 
             case 3:
