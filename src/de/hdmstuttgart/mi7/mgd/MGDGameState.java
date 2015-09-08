@@ -114,6 +114,8 @@ public class MGDGameState implements GameState {
         bottomLineBox = new AABB(-25, -41, 50, 0.01f);
         gameBox = new AABB(-25, -40, 50, 80);
 
+        gameBox = new AABB(-25,-40,50,80);
+
         //TEXT
         matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
 
@@ -268,16 +270,21 @@ public class MGDGameState implements GameState {
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
             //CONTROLS
+
             if(pressedLeft){
-                jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
-                jetObject.getMatrix().rotateY(-0.1f);
-                jetObject.updateHitBoxAABB();
+                if(jetObject.getHitBoxAABB().intersects(gameBox)){
+                    jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
+                    jetObject.getMatrix().rotateY(-0.1f);
+                    jetObject.updateHitBoxAABB();
+                }
             }
 
             if(pressedRight) {
-                jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
-                jetObject.getMatrix().rotateY(0.1f);
-                jetObject.updateHitBoxAABB();
+                if(jetObject.getHitBoxAABB().intersects(gameBox)) {
+                    jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
+                    jetObject.getMatrix().rotateY(0.1f);
+                    jetObject.updateHitBoxAABB();
+                }
             }
 
             //DETECT COLLISION JET and BOXES
