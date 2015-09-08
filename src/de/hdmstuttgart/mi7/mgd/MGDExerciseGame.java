@@ -45,6 +45,7 @@ public class MGDExerciseGame implements GameState {
     private AABB controlLeftBox, controlRightBox, topLeft,topRight;
     //OTHER BOXES
     private AABB bottomLineBox;
+    private AABB gameBox;
 
     //GAMEOBJECTS
     private JetObject jetObject, tmpObject;
@@ -111,6 +112,8 @@ public class MGDExerciseGame implements GameState {
 
         //HITBOXEN
         bottomLineBox = new AABB(-25, -41, 50, 0.01f);
+
+        gameBox = new AABB(-25,-40,50,80);
 
         //TEXT
         matrixTest = new Matrix4x4().createTranslation(20, 35, 0);
@@ -266,16 +269,21 @@ public class MGDExerciseGame implements GameState {
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
             //CONTROLS
+
             if(pressedLeft){
-                jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
-                jetObject.getMatrix().rotateY(-0.1f);
-                jetObject.updateHitBoxAABB();
+                if(jetObject.getHitBoxAABB().intersects(gameBox)){
+                    jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
+                    jetObject.getMatrix().rotateY(-0.1f);
+                    jetObject.updateHitBoxAABB();
+                }
             }
 
             if(pressedRight) {
-                jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
-                jetObject.getMatrix().rotateY(0.1f);
-                jetObject.updateHitBoxAABB();
+                if(jetObject.getHitBoxAABB().intersects(gameBox)) {
+                    jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
+                    jetObject.getMatrix().rotateY(0.1f);
+                    jetObject.updateHitBoxAABB();
+                }
             }
 
             //DETECT COLLISION JET and BOXES

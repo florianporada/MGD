@@ -69,7 +69,7 @@ public class MGDMenuState implements GameState {
                 graphicsDevice.createTextBuffer(fontMenu, 16)
         };
         textMenu[0].setText("Start Game");
-        textMenu[1].setText("Options");
+        textMenu[1].setText("Highscore");
         textMenu[2].setText("Credits");
         textMenu[3].setText("Quit");
 
@@ -189,6 +189,11 @@ public class MGDMenuState implements GameState {
             case 0:
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDExerciseGame());
+                break;
+
+            case 1:
+                mediaPlayer.release();
+                //game.getGameStateManager().setGameState(new MGDHighscoreStat());
                 break;
 
             case 3:
