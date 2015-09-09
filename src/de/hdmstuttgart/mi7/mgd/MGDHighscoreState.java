@@ -1,24 +1,24 @@
 package de.hdmstuttgart.mi7.mgd;
 
-import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
-import de.hdmstuttgart.mi7.mgd.collision.AABB;
-import de.hdmstuttgart.mi7.mgd.collision.Point;
-import de.hdmstuttgart.mi7.mgd.game.Game;
-import de.hdmstuttgart.mi7.mgd.game.GameState;
-import de.hdmstuttgart.mi7.mgd.graphics.*;
-import de.hdmstuttgart.mi7.mgd.input.InputEvent;
-import de.hdmstuttgart.mi7.mgd.input.InputSystem;
-import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
-import de.hdmstuttgart.mi7.mgd.math.Vector3;
-import de.hdmstuttgart.mmi.mgd.R;
+        import android.content.Context;
+        import android.media.AudioAttributes;
+        import android.media.MediaPlayer;
+        import android.media.SoundPool;
+        import de.hdmstuttgart.mi7.mgd.collision.AABB;
+        import de.hdmstuttgart.mi7.mgd.collision.Point;
+        import de.hdmstuttgart.mi7.mgd.game.Game;
+        import de.hdmstuttgart.mi7.mgd.game.GameState;
+        import de.hdmstuttgart.mi7.mgd.graphics.*;
+        import de.hdmstuttgart.mi7.mgd.input.InputEvent;
+        import de.hdmstuttgart.mi7.mgd.input.InputSystem;
+        import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
+        import de.hdmstuttgart.mi7.mgd.math.Vector3;
+        import de.hdmstuttgart.mmi.mgd.R;
 
 /**
- * Created by florianporada on 28.08.15.
+ * Created by christophkramer on 09.09.15.
  */
-public class MGDMenuState implements GameState {
+public class MGDHighscoreState implements GameState {
 
     private Camera menuCam;
 
@@ -29,7 +29,7 @@ public class MGDMenuState implements GameState {
     private SpriteFont fontMenu;
     private TextBuffer[] textMenu;
     private Matrix4x4 projection, view;
-    private Matrix4x4[] matrixMenu;
+    private Matrix4x4[] matMenu;
     private AABB[] aabbMenu;
 
     //MEDIAPLAYER
@@ -67,12 +67,12 @@ public class MGDMenuState implements GameState {
                 graphicsDevice.createTextBuffer(fontMenu, 16),
                 graphicsDevice.createTextBuffer(fontMenu, 16)
         };
-        textMenu[0].setText("Start Game");
-        textMenu[1].setText("Highscore");
-        textMenu[2].setText("Credits");
-        textMenu[3].setText("Quit");
+        textMenu[0].setText("Highscore");
+        textMenu[1].setText("Chris");
+        textMenu[2].setText("10 points LvL 2");
+        textMenu[3].setText("back");
 
-        matrixMenu = new Matrix4x4[]{
+        matMenu = new Matrix4x4[]{
                 Matrix4x4.createTranslation(0, 0, 0),
                 Matrix4x4.createTranslation(0, -64, 0),
                 Matrix4x4.createTranslation(0, -128, 0),
@@ -126,15 +126,15 @@ public class MGDMenuState implements GameState {
                                     worldTouchPosition.getX(),
                                     worldTouchPosition.getY());
 
-                            for (int i = 0; i < aabbMenu.length; ++i) {
-                                AABB aabb = aabbMenu[i];
+
+                                AABB aabb = aabbMenu[3];
+
+
                                 if (touchPoint.intersects(aabb)) {
                                     if (soundPool != null)
                                         soundPool.play(clickSound, 1, 1, 0, 0, 1);
-
-                                    onMenuItemClicked(game, i);
+                                        onMenuItemClicked(game);
                                 }
-                            }
                     }
                     break;
             }
@@ -153,7 +153,7 @@ public class MGDMenuState implements GameState {
         graphicsDevice.setCamera(menuCam);
         renderer.drawText(textTitle, matTitle);
         for (int i = 0; i < textMenu.length; ++i)
-            renderer.drawText(textMenu[i], matrixMenu[i]);
+            renderer.drawText(textMenu[i], matMenu[i]);
     }
 
     public void resize(Game game, int width, int height) {
@@ -183,21 +183,10 @@ public class MGDMenuState implements GameState {
 
     }
 
-    private void onMenuItemClicked(Game game, int i) {
-        switch (i) {
-            case 0:
-                mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDGameState());
-                break;
+    private void onMenuItemClicked(Game game) {
 
-            case 1:
                 mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDHighscoreState());
-                break;
+                game.getGameStateManager().setGameState(new MGDMenuState());
 
-            case 3:
-                game.finish();
-                break;
-        }
     }
 }
