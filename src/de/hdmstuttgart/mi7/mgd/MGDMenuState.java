@@ -90,7 +90,7 @@ public class MGDMenuState implements GameState {
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.main2);
+            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop1);
         }
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
