@@ -118,6 +118,7 @@ public class MGDGameState implements GameState {
 
         //TEXT
         matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
+        matrixTest.setIdentity();
 
 
         //GAMEOBJECTS

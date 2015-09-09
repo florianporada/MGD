@@ -1,3 +1,4 @@
+
 package de.hdmstuttgart.mi7.mgd;
 
 import android.app.Activity;
