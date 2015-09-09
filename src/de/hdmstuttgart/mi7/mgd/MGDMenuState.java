@@ -24,12 +24,12 @@ public class MGDMenuState implements GameState {
 
     private SpriteFont fontTitle;
     private TextBuffer textTitle;
-    private Matrix4x4 matTitle;
+    private Matrix4x4 matrixTitle;
 
     private SpriteFont fontMenu;
     private TextBuffer[] textMenu;
     private Matrix4x4 projection, view;
-    private Matrix4x4[] matMenu;
+    private Matrix4x4[] matrixMenu;
     private AABB[] aabbMenu;
 
     //MEDIAPLAYER
@@ -49,7 +49,7 @@ public class MGDMenuState implements GameState {
         menuCam.setProjection(projection);
         menuCam.setView(view);
 
-        matTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
+        matrixTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
 
     }
 
@@ -72,7 +72,7 @@ public class MGDMenuState implements GameState {
         textMenu[2].setText("Credits");
         textMenu[3].setText("Quit");
 
-        matMenu = new Matrix4x4[]{
+        matrixMenu = new Matrix4x4[]{
                 Matrix4x4.createTranslation(0, 0, 0),
                 Matrix4x4.createTranslation(0, -64, 0),
                 Matrix4x4.createTranslation(0, -128, 0),
@@ -151,9 +151,9 @@ public class MGDMenuState implements GameState {
         graphicsDevice.clear(0.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
         graphicsDevice.setCamera(menuCam);
-        renderer.drawText(textTitle, matTitle);
+        renderer.drawText(textTitle, matrixTitle);
         for (int i = 0; i < textMenu.length; ++i)
-            renderer.drawText(textMenu[i], matMenu[i]);
+            renderer.drawText(textMenu[i], matrixMenu[i]);
     }
 
     public void resize(Game game, int width, int height) {
@@ -164,8 +164,8 @@ public class MGDMenuState implements GameState {
         projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
         menuCam.setProjection(projection);
 
-        matTitle.setIdentity();
-        matTitle.translate(-width / 2, height / 2 - 64, 0);
+        matrixTitle.setIdentity();
+        matrixTitle.translate(-width / 2, height / 2 - 64, 0);
     }
 
     public void pause(Game game) {

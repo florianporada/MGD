@@ -1,10 +1,9 @@
-// TODO: Top Down Sicht
-// TODO: Gegner kommen zufällig von oben nach unten
-// TODO: Ausweichen oder Abschießen
-// TODO: PowerUps:
-			// TODO: Schussfrequenz
-			// TODO: Schnellere Bewegung
-
-
-//TODO: Sound Einbinden
-//TODO: Hitboxen an Matrix anpassen
+//TODO: 8.9.2015
+	//TODO: Rendering Problem bei GameStates (Text wird nicht gerendert) nur bei Resize (chris)
+	//TODO: HighscoreState inklusive persistenter Daten (inputstream etc) (chris)
+	//TODO: Hitbox Events (flo)
+	//TODO: Schiessen implementieren (flo)
+	//TODO: PowerUps (chris)
+	//TODO: obj Dateien ändern (beide)
+	//TODO: boxGenerator optimieren (hitboxen variabel setzen) (flo)
+	//TODO: CreditState (chris)

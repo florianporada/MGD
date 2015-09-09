@@ -45,7 +45,6 @@ public class MGDGameState implements GameState {
     private AABB controlLeftBox, controlRightBox, topLeft,topRight;
     //OTHER BOXES
     private AABB bottomLineBox;
-    private AABB gameBox;
 
     //GAMEOBJECTS
     private JetObject jetObject, tmpObject;
@@ -64,10 +63,8 @@ public class MGDGameState implements GameState {
     private boolean atBottomA, atBottomB;
 
     private boolean yas = false, lock = false, clockLock = false, startGame = false;
-    private boolean missileLock[];
-    private int counter, missileCounter;
+    private int counter;
     private ArrayList<EnemyObject> boxArrayA, boxArrayB;
-    private ArrayList<WeaponObject> missileArray;
 
     //TEST
     final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -79,6 +76,9 @@ public class MGDGameState implements GameState {
         if(context == null)
             context = game.getContext();
 
+        float width = game.getScreenWidth();
+        float height = game.getScreenHeight();
+
         //SCENECAM
         projection = new Matrix4x4();
         projection.setOrhtogonalProjection(-22.5f, 22.5f, -40f, 40f, 0.1f, 100f);
@@ -89,6 +89,14 @@ public class MGDGameState implements GameState {
         sceneCam = new Camera();
         sceneCam.setProjection(projection);
         sceneCam.setView(view);
+
+
+        projection = new Matrix4x4();
+        projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
+        view = new Matrix4x4();
+        hudCam = new Camera();
+        hudCam.setProjection(projection);
+        hudCam.setView(view);
 
 
         //CONTROLS
@@ -104,17 +112,9 @@ public class MGDGameState implements GameState {
         atBottomB = false;
         boxArrayA = boxDropper(10);
         boxArrayB = boxDropper(10);
-        //SHOW INDEX OF LOWES BOX
-//        for(EnemyObject o : boxArrayA){
-//            System.out.println(o.getMatrix().m[13]);
-//        }
-//        System.out.println("Min: "+MathHelper.getMinValueIndex(boxArrayA));
 
         //HITBOXEN
         bottomLineBox = new AABB(-25, -41, 50, 0.01f);
-        gameBox = new AABB(-25, -40, 50, 80);
-
-        gameBox = new AABB(-25,-40,50,80);
 
         //TEXT
         matrixTest = new Matrix4x4().createTranslation(0, 0, 0);
@@ -125,14 +125,6 @@ public class MGDGameState implements GameState {
         //jetObject.getMatrix().scale(0.7f);
         missileObject = new WeaponObject(new Matrix4x4().createTranslation(0, -15f, 0), 20f, 20f);
 
-
-        //INITIALIZE MISSILE ARRAY AND MISSILELOCK
-        missileArray = new ArrayList<>();
-        missileLock = new boolean[4];
-        for(int i = 0; i < missileLock.length; i++){
-            missileArray.add(new WeaponObject(new Matrix4x4(), 20f, 20f));
-            missileLock[i] = false;
-        }
 
         tmpObject = new JetObject(new Matrix4x4(), 20f, 20f);
         tmpObject.getMatrix().translate(-10, 25,0);
@@ -157,11 +149,6 @@ public class MGDGameState implements GameState {
             //TMP
             tmpObject.loadObject("box.obj", "box.png", graphicsDevice, context);
 
-            //LOAD MISSILE ARRAY
-            for(WeaponObject o : missileArray){
-                o.loadObject("box.obj", "box.png", graphicsDevice, context);
-            }
-
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
                 int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));
@@ -179,8 +166,8 @@ public class MGDGameState implements GameState {
 			e.printStackTrace();
 		}
 
-        fontTest = graphicsDevice.createSpriteFont(null, 16);
-        textTest = graphicsDevice.createTextBuffer(fontTest, 66);
+        fontTest = graphicsDevice.createSpriteFont(null, 64);
+        textTest = graphicsDevice.createTextBuffer(fontTest, 16);
         textTest.setText("Stahp!");
 
         //LOAD MEDIAPLAYER
@@ -272,7 +259,7 @@ public class MGDGameState implements GameState {
             //CONTROLS
 
             if(pressedLeft){
-                if(jetObject.getHitBoxAABB().intersects(gameBox)){
+                if(jetObject.getMatrix().m[12] > -22f){
                     jetObject.getMatrix().translate(-jetObject.getControlSpeed(), 0, 0);
                     jetObject.getMatrix().rotateY(-0.1f);
                     jetObject.updateHitBoxAABB();
@@ -280,7 +267,7 @@ public class MGDGameState implements GameState {
             }
 
             if(pressedRight) {
-                if(jetObject.getHitBoxAABB().intersects(gameBox)) {
+                if(jetObject.getMatrix().m[12] < 22f){
                     jetObject.getMatrix().translate(jetObject.getControlSpeed(), 0, 0);
                     jetObject.getMatrix().rotateY(0.1f);
                     jetObject.updateHitBoxAABB();
@@ -353,14 +340,6 @@ public class MGDGameState implements GameState {
                 missileObject.getMatrix().translate(0, 0.2f, 0);
 
 
-                //STAY IN GAMEBOX
-                if(!jetObject.getHitBoxAABB().intersects(gameBox)){
-                    System.out.println("come back inside!!!");
-                }else{
-
-                }
-
-
                 //BOXES FROM TOP TO BOTTOM
                 for(EnemyObject o : boxArrayA) {
                     o.getMatrix().translate(0, o.getSpeed(), 0);
@@ -417,11 +396,14 @@ public class MGDGameState implements GameState {
 
         graphicsDevice.clear(0.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
-        //Stuff fuer LVL
-        graphicsDevice.setCamera(sceneCam);
-        renderer.drawMesh(jetObject.getMesh(), jetObject.getMatrix(), jetObject.getMaterial());
+        //Stuff for HUD
+        graphicsDevice.setCamera(hudCam);
         renderer.drawText(textTest, matrixTest);
 
+
+        //Stuff for LVL
+        graphicsDevice.setCamera(sceneCam);
+        renderer.drawMesh(jetObject.getMesh(), jetObject.getMatrix(), jetObject.getMaterial());
 
 
         for(EnemyObject o : boxArrayA){
@@ -435,10 +417,9 @@ public class MGDGameState implements GameState {
         //RENDER IF HIT THE jetHitBox
         if(yas){
             renderer.drawMesh(missileObject.getMesh(), missileObject.getMatrix(), missileObject.getMaterial());
-            for(WeaponObject w : missileArray){
-                renderer.drawMesh(w.getMesh(), w.getMatrix(), w.getMaterial());
-            }
         }
+
+
 
     }
 
@@ -447,9 +428,9 @@ public class MGDGameState implements GameState {
         float aspect = (float)width / (float)height;
         Matrix4x4 projection;
 
-//        projection = new Matrix4x4();
-//        projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
-//        hudCam.setProjection(projection);
+        projection = new Matrix4x4();
+        projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
+        hudCam.setProjection(projection);
 
         projection = new Matrix4x4();
 //        projection.setPerspectiveProjection(-0.1f * aspect, 0.1f * aspect, -0.1f, 0.1f, 0.1f, 100.0f);
