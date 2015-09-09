@@ -15,6 +15,8 @@ import java.io.IOException;
  * Created by florianporada on 29.08.15.
  */
 public class WeaponObject extends GameObject {
+    float missileSpeed = 0.2f;
+    boolean alive = true;
     public WeaponObject(View view) {
         super(view);
     }
@@ -25,6 +27,22 @@ public class WeaponObject extends GameObject {
 
     public WeaponObject(Matrix4x4 matrix, float hitboxRadius) {
         super(matrix, hitboxRadius);
+    }
+
+    public float getMissileSpeed() {
+        return missileSpeed;
+    }
+
+    public void setMissileSpeed(float missileSpeed) {
+        this.missileSpeed = missileSpeed;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override

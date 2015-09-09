@@ -24,7 +24,7 @@ public class MGDMenuState implements GameState {
 
     private SpriteFont fontTitle;
     private TextBuffer textTitle;
-    private Matrix4x4 matrixTitle;
+    private Matrix4x4 matTitle;
 
     private SpriteFont fontMenu;
     private TextBuffer[] textMenu;
@@ -49,7 +49,7 @@ public class MGDMenuState implements GameState {
         menuCam.setProjection(projection);
         menuCam.setView(view);
 
-        matrixTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
+        matTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
 
     }
 
@@ -151,7 +151,7 @@ public class MGDMenuState implements GameState {
         graphicsDevice.clear(0.0f, 0.5f, 1.0f, 1.0f, 1.0f);
 
         graphicsDevice.setCamera(menuCam);
-        renderer.drawText(textTitle, matrixTitle);
+        renderer.drawText(textTitle, matTitle);
         for (int i = 0; i < textMenu.length; ++i)
             renderer.drawText(textMenu[i], matrixMenu[i]);
     }
@@ -164,8 +164,8 @@ public class MGDMenuState implements GameState {
         projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
         menuCam.setProjection(projection);
 
-        matrixTitle.setIdentity();
-        matrixTitle.translate(-width / 2, height / 2 - 64, 0);
+        matTitle.setIdentity();
+        matTitle.translate(-width / 2, height / 2 - 64, 0);
     }
 
     public void pause(Game game) {
