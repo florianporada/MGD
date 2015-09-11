@@ -55,7 +55,7 @@ public class MGDGameState implements GameState {
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
     private SoundPool soundPool;
-    private int clickSound, duckSound1, duckSound2, noSound;
+    private int clickSound, duckSound1, duckSound2, noSound, fartSound;
 
     //CONTROL BOOLEANS
     private boolean pressedLeft , pressedRight;
@@ -105,8 +105,8 @@ public class MGDGameState implements GameState {
         //CONTROLS
         pressedLeft = false;
         pressedRight = false;
-        controlRightBox = new AABB(0, -40f,22f, 25f);
-        controlLeftBox = new AABB(-22f, -40f,22f, 25f);
+        controlRightBox = new AABB(0, -40f,22f, 20f);
+        controlLeftBox = new AABB(-22f, -40f,22f, 20f);
         topLeft = new AABB(-22f, 30f, 22f, 10f);
         topRight = new AABB(0, 30f, 22f, 10f);
 
@@ -185,6 +185,7 @@ public class MGDGameState implements GameState {
         duckSound1 = soundPool.load(context, R.raw.duck1, 1);
         duckSound2 = soundPool.load(context, R.raw.duck2, 1);
         noSound = soundPool.load(context, R.raw.no, 1);
+        fartSound = soundPool.load(context, R.raw.fart, 1);
 
     }
 
@@ -252,6 +253,7 @@ public class MGDGameState implements GameState {
                                         soundPool.play(noSound, 1, 1, 0, 0, 1);
                                 }
                                 shotMissile = true;
+                                missileObject.setAlive(true);
                             }
 
                             break;
@@ -275,6 +277,10 @@ public class MGDGameState implements GameState {
                         jetObject.getMatrix().rotateY(-0.1f);
                         jetObject.updateHitBoxAABB();
                     }
+                    //SET MISIILEPOSITION IF IT IS NOT ALIVE
+                    if(!missileObject.isAlive()){
+                        missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
+                    }
                 }
 
                 if(pressedRight) {
@@ -283,12 +289,20 @@ public class MGDGameState implements GameState {
                         jetObject.getMatrix().rotateY(0.1f);
                         jetObject.updateHitBoxAABB();
                     }
+                    //SET MISIILEPOSITION IF IT IS NOT ALIVE
+                    if(!missileObject.isAlive()) {
+                        missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
+                    }
                 }
 
                 for(EnemyObject o : boxArrayA){
                     //DETECT COLLISION JET and BOXES
                     if(jetObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && o.isAlive()){
-                        enemyHitAction(o);
+                        jetHitAction(o);
+                    }
+                    //DETECT COLLISION MISSILE and BOXES
+                    if(missileObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && missileObject.isAlive()){
+                        missileHitAction(o);
                     }
                     //RESET ALIVE STATUS FOR BOXARRAY A
                     if(bottomLineBox.intersects(o.getHitBoxAABB()))
@@ -301,8 +315,13 @@ public class MGDGameState implements GameState {
                 }
 
                 for(EnemyObject o : boxArrayB){
+                    //DETECT COLLISION JET and BOXES
                     if (jetObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && o.isAlive()){
-                        enemyHitAction(o);
+                        jetHitAction(o);
+                    }
+                    //DETECT COLLISION MISSILE and BOXES
+                    if(missileObject.getHitBoxAABB().intersects(o.getHitBoxAABB()) && missileObject.isAlive()){
+                        missileHitAction(o);
                     }
                     //RESET ALIVE STATUS FOR BOXARRAY B
                     if(bottomLineBox.intersects(o.getHitBoxAABB()))
@@ -314,14 +333,12 @@ public class MGDGameState implements GameState {
                     o.updateHitBoxAABB();
                 }
 
-//                if(!lock){
-//                    missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
-//                    //LOCK X Position from Jet for shoot straight upwards
-//                }
                 if(topLineBox.intersects(missileObject.getHitBoxAABB())){
-                    missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
                     shotMissile = false;
+                    missileObject.setAlive(false);
+                    missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
                     System.out.println("missile weg");
+
                 }
 
                 //MISSILE SHOOOOOOOT
@@ -484,14 +501,27 @@ public class MGDGameState implements GameState {
         }
     }
 
-    public void enemyHitAction(EnemyObject o){
+    public void jetHitAction(EnemyObject o){
         o.setAlive(false);
         if (soundPool != null)
             soundPool.play(duckSound1, 1, 1, 0, 0, 1);
         counter++;
         textTest.setText("" + counter);
         System.out.println("peng!!");
-        o.getMaterial().setTexture(jetObject.getMaterial().getTexture());
+    }
+
+    public void missileHitAction(EnemyObject o){
+        o.setAlive(false);
+        missileObject.setAlive(false);
+        shotMissile = false;
+        missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
+        if (soundPool != null)
+            soundPool.play(fartSound, 1, 1, 0, 0, 1);
+        try {
+            o.loadObject("box.obj", "box.png", graphicsDevice, context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
