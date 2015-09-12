@@ -42,7 +42,7 @@ public class MGDMenuState implements GameState {
         float height = game.getScreenHeight();
 
         projection = new Matrix4x4();
-        projection.setPerspectiveProjection(-0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 16.0f);
+        projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
         //projection.setOrhtogonalProjection(-100f, 100f, -100f, 100f, 0.0f, 100.0f);
         view = new Matrix4x4();
         menuCam = new Camera();
