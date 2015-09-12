@@ -18,6 +18,7 @@ import java.io.InputStream;
  */
 public class JetObject extends GameObject{
     private float controlSpeed = 0.1f;
+    private boolean alive = true;
 
     public JetObject(View view) {
         super(view);
@@ -37,6 +38,14 @@ public class JetObject extends GameObject{
 
     public void setControlSpeed(float controlSpeed) {
         this.controlSpeed = controlSpeed;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override

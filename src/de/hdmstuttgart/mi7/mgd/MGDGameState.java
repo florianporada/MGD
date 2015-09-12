@@ -39,9 +39,9 @@ public class MGDGameState implements GameState {
 
 	private Matrix4x4 projection, view;
     //DECLARE TEXT
-    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount;
-    private SpriteFont fontHitCount, fontKillCount, fontLevelCount;
-    private TextBuffer textHitCount, textKillCount, textLevelCount;
+    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount, matrixGameOver;
+    private SpriteFont fontHitCount, fontKillCount, fontLevelCount, fontGameOver;
+    private TextBuffer textHitCount, textKillCount, textLevelCount, textGameOver;
     //DECLARE CONTROLBOXES
     private AABB controlLeftBox, controlRightBox, topLeft,topRight;
     //OTHER BOXES
@@ -51,7 +51,7 @@ public class MGDGameState implements GameState {
     private JetObject jetObject;
     private WeaponObject missileObject;
 
-    private String[][] randomEnemyObjects = {{"cow.obj", "sphere.bmp",}, {"icosahedron.obj", "tree.png"}, {"teapot.obj", "road.png"}, {"box.obj", "box.png"}};
+    private String[][] randomEnemyObjects = {{"cow.obj", "road.png",}, {"icosahedron.obj", "road.png"}, {"teapot.obj", "road.png"}, {"cube.obj", "road.png"}};
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -63,15 +63,15 @@ public class MGDGameState implements GameState {
     //BOXGENERATOR BOOLEANS
     private boolean atBottomA, atBottomB;
 
-    private boolean startGame = false;
+    private boolean startGame, gameOver;
     //COUNTER
     private int hitCounter, killCounter, levelCounter;
     //ENEMYOBJECTS
     private ArrayList<EnemyObject> boxArrayA, boxArrayB;
 
     //LVL DIFFICULTY
-    float lvlTime = 0;
-    int boxCount = 15;
+    float lvlTime, gameOverTime;
+    int boxCount;
 
     //TEST
     final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -103,6 +103,20 @@ public class MGDGameState implements GameState {
         hudCam.setProjection(projection);
         hudCam.setView(view);
 
+        //COUNTER
+        hitCounter = 10;
+        levelCounter = 0;
+        killCounter = 0;
+
+        //BOOLS
+        startGame = false;
+        gameOver = false;
+
+        //INTS
+        lvlTime = 0;
+        gameOverTime = 0;
+        boxCount = 15;
+
 
         //CONTROLS
         pressedLeft = false;
@@ -124,16 +138,18 @@ public class MGDGameState implements GameState {
         topLineBox = new AABB(-25, 41, 50, 0.01f);
 
         //TEXT
-        matrixHitCount = new Matrix4x4().createTranslation(-500, 700, 0);
-        matrixKillCount = new Matrix4x4().createTranslation(-500, 650, 0);
-        matrixLevelCount = new Matrix4x4().createTranslation(-500, 600, 0);
+        matrixHitCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 700, 0));
+        matrixKillCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 650, 0));
+        matrixLevelCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 600, 0));
+        matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-250, 0, 0));
+
 
 
         //GAMEOBJECTS
-        jetObject = new JetObject(new Matrix4x4().createTranslation(0, -15f, 0), 5f, 5f);
+        jetObject = new JetObject(new Matrix4x4(Matrix4x4.createTranslation(0, -15f, 0)), 5f, 5f);
         jetObject.getMatrix().scale(0.7f);
 
-        missileObject = new WeaponObject(new Matrix4x4().createTranslation(0, -15f, 0), 2f, 2f);
+        missileObject = new WeaponObject(new Matrix4x4(Matrix4x4.createTranslation(0, -15f, 0)), 2f, 2f);
 
         //executorService.scheduleAtFixedRate(boxRandomizer(boxArrayA), 0, 7, TimeUnit.SECONDS);
     }
@@ -173,22 +189,25 @@ public class MGDGameState implements GameState {
 
         fontHitCount = graphicsDevice.createSpriteFont(null, 64);
         textHitCount = graphicsDevice.createTextBuffer(fontHitCount, 16);
-        textHitCount.setText("Ouchies: ");
+        textHitCount.setText("Life: "+hitCounter);
 
         fontKillCount = graphicsDevice.createSpriteFont(null, 64);
         textKillCount = graphicsDevice.createTextBuffer(fontKillCount, 16);
-        textKillCount.setText("Kills: ");
+        textKillCount.setText("Kills: "+killCounter);
 
         fontLevelCount = graphicsDevice.createSpriteFont(null, 64);
         textLevelCount = graphicsDevice.createTextBuffer(fontLevelCount, 16);
-        textLevelCount.setText("Level: ");
+        textLevelCount.setText("Level: "+levelCounter);
+
+        fontGameOver = graphicsDevice.createSpriteFont(null, 64);
+        textGameOver = graphicsDevice.createTextBuffer(fontGameOver, 16);
+        textGameOver.setText("Game Over!");
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop3);
+            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop1);
         }
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+
 
         AudioAttributes attributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -285,6 +304,10 @@ public class MGDGameState implements GameState {
 
             if (startGame) {
             //######################## START startGame BLOCK ##############################
+                //START MEDIA PLAYER
+                mediaPlayer.start();
+                mediaPlayer.setLooping(true);
+
                 //CONTROLS
                 if(pressedLeft && !pressedRight){
                     if(jetObject.getMatrix().m[12] > -22f){
@@ -374,6 +397,20 @@ public class MGDGameState implements GameState {
                 }
             //######################## END startGame BLOCK ##############################
             }
+            if(hitCounter == 0 && !gameOver){
+                if(jetObject.isAlive()){
+                    jetObject.setAlive(false);
+                    if(soundPool != null)
+                        soundPool.play(fartSound, 1, 1, 0, 0, 1);
+                }
+                gameOverTime += deltaSeconds;
+                startGame = false;
+                if(gameOverTime > 5) {
+                    gameOver = true;
+                    //TODO: HIER NOCH ÜBERGABE AN HIGHSCORESTATE BZW IN DIE DATENBANK SCHREIBEN
+                    gameOver(game);
+                }
+            }
         }
     }
 
@@ -412,6 +449,9 @@ public class MGDGameState implements GameState {
             renderer.drawText(textHitCount, matrixHitCount);
             renderer.drawText(textKillCount, matrixKillCount);
             renderer.drawText(textLevelCount, matrixLevelCount);
+        }
+        if(!jetObject.isAlive() && !startGame){
+            renderer.drawText(textGameOver, matrixGameOver);
         }
     }
 
@@ -455,7 +495,7 @@ public class MGDGameState implements GameState {
     public ArrayList<EnemyObject> boxDropper(int amount, float start, float end){
         ArrayList<EnemyObject> a = new ArrayList<>();
         for(int i = 0; i < amount; i++){
-            EnemyObject o = new EnemyObject(new Matrix4x4().createTranslation(randfloat(-25, 25), randfloat(start, end), 0), 2f, 2f);
+            EnemyObject o = new EnemyObject(new Matrix4x4(Matrix4x4.createTranslation(randfloat(-25, 25), randfloat(start, end), 0)), 2f, 2f);
             a.add(o);
         }
         return a;
@@ -463,7 +503,7 @@ public class MGDGameState implements GameState {
 
     public void boxRandomizer(ArrayList<EnemyObject> b, float minY, float maxY){
         for(EnemyObject o : b){
-            o.setMatrix(new Matrix4x4().createTranslation(randfloat(-25, 25), randfloat(minY, maxY), 0));
+            o.setMatrix(new Matrix4x4(Matrix4x4.createTranslation(randfloat(-25, 25), randfloat(minY, maxY), 0)));
         }
     }
 
@@ -471,8 +511,8 @@ public class MGDGameState implements GameState {
         o.setAlive(false);
         if (soundPool != null)
             soundPool.play(duckSound1, 1, 1, 0, 0, 1);
-        hitCounter++;
-        textHitCount.setText("Ouchies: " + hitCounter);
+        hitCounter--;
+        textHitCount.setText("Hits: " + hitCounter);
         System.out.println("peng!!");
     }
 
@@ -484,11 +524,7 @@ public class MGDGameState implements GameState {
         textKillCount.setText("Kills: " + killCounter);
         if (soundPool != null)
             soundPool.play(fartSound, 1, 1, 0, 0, 1);
-        try {
-            o.loadObject("box.obj", "blank.png", graphicsDevice, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        o.getMatrix().scale(0.0000000001f);
     }
 
     public void enemyHitAction(EnemyObject o){
@@ -508,6 +544,12 @@ public class MGDGameState implements GameState {
         o.getMatrix().translate(0, o.getSpeed(), 0);
         o.getMatrix().rotateY(MathHelper.randfloat(0.02f, 0.8f));
         o.updateHitBoxAABB();
+    }
+
+    public void gameOver(Game game){
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        game.getGameStateManager().setGameState(new MGDHighscoreState());
     }
 
 }

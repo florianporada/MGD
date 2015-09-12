@@ -31,6 +31,7 @@ public class MGDMenuState implements GameState {
     private Matrix4x4 projection, view;
     private Matrix4x4[] matrixMenu;
     private AABB[] aabbMenu;
+    private float textOffset;
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -49,16 +50,18 @@ public class MGDMenuState implements GameState {
         menuCam.setProjection(projection);
         menuCam.setView(view);
 
-        matTitle = Matrix4x4.createTranslation(-width / 2, height / 2 - 64, 0);
+        matTitle = Matrix4x4.createTranslation(0, 100, 0);
+
+        textOffset = 40;
 
     }
 
     public void loadContent(Game game) {
         GraphicsDevice graphicsDevice = game.getGraphicsDevice();
 
-        fontTitle = graphicsDevice.createSpriteFont(null, 64);
+        fontTitle = graphicsDevice.createSpriteFont(null, 80);
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 16);
-        textTitle.setText("DrivingSim");
+        textTitle.setText("I can't #e");
 
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
         textMenu = new TextBuffer[]{
@@ -73,17 +76,17 @@ public class MGDMenuState implements GameState {
         textMenu[3].setText("Quit");
 
         matrixMenu = new Matrix4x4[]{
-                Matrix4x4.createTranslation(0, 0, 0),
-                Matrix4x4.createTranslation(0, -64, 0),
-                Matrix4x4.createTranslation(0, -128, 0),
-                Matrix4x4.createTranslation(0, -192, 0)
+                Matrix4x4.createTranslation(-200, 0+textOffset, 0),
+                Matrix4x4.createTranslation(-200, -64+textOffset, 0),
+                Matrix4x4.createTranslation(-200, -128+textOffset, 0),
+                Matrix4x4.createTranslation(-200, -192+textOffset, 0)
         };
 
         aabbMenu = new AABB[]{
-                new AABB(0, 0, 120, 64),
-                new AABB(0, -64, 120, 64),
-                new AABB(0, -128, 120, 64),
-                new AABB(0, -192, 120, 64)
+                new AABB(-300, 0+textOffset, 300, 64),
+                new AABB(-300, -64+textOffset, 300, 64),
+                new AABB(-300, -128+textOffset, 300, 64),
+                new AABB(-300, -192+textOffset, 300, 64)
         };
 
         Context context = game.getContext();
@@ -186,11 +189,13 @@ public class MGDMenuState implements GameState {
     private void onMenuItemClicked(Game game, int i) {
         switch (i) {
             case 0:
+                mediaPlayer.stop();
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDGameState());
                 break;
 
             case 1:
+                mediaPlayer.stop();
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDHighscoreState());
                 break;
