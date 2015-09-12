@@ -141,7 +141,7 @@ public class MGDGameState implements GameState {
         matrixHitCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 700, 0));
         matrixKillCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 650, 0));
         matrixLevelCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 600, 0));
-        matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-250, 0, 0));
+        matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
 
 
 
@@ -199,7 +199,7 @@ public class MGDGameState implements GameState {
         textLevelCount = graphicsDevice.createTextBuffer(fontLevelCount, 16);
         textLevelCount.setText("Level: "+levelCounter);
 
-        fontGameOver = graphicsDevice.createSpriteFont(null, 64);
+        fontGameOver = graphicsDevice.createSpriteFont(null, 120);
         textGameOver = graphicsDevice.createTextBuffer(fontGameOver, 16);
         textGameOver.setText("Game Over!");
 
@@ -386,10 +386,10 @@ public class MGDGameState implements GameState {
                 if(lvlTime > 80){
                     System.out.println("lvl up!");
                     for(EnemyObject o : boxArrayA){
-                        o.setSpeed(o.getSpeed()-0.015f);
+                        o.setSpeed(o.getSpeed()-0.019f);
                     }
                     for(EnemyObject o : boxArrayB){
-                        o.setSpeed(o.getSpeed()-0.015f);
+                        o.setSpeed(o.getSpeed()-0.019f);
                     }
                     levelCounter += 1;
                     textLevelCount.setText("Level: "+levelCounter);
@@ -450,6 +450,7 @@ public class MGDGameState implements GameState {
             renderer.drawText(textKillCount, matrixKillCount);
             renderer.drawText(textLevelCount, matrixLevelCount);
         }
+        graphicsDevice.setCamera(hudCam);
         if(!jetObject.isAlive() && !startGame){
             renderer.drawText(textGameOver, matrixGameOver);
         }

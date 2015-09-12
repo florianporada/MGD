@@ -1,6 +1,7 @@
 package de.hdmstuttgart.mi7.mgd;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -50,18 +51,18 @@ public class MGDMenuState implements GameState {
         menuCam.setProjection(projection);
         menuCam.setView(view);
 
-        matTitle = Matrix4x4.createTranslation(0, 100, 0);
+        matTitle = Matrix4x4.createTranslation(-300, 200, 0);
 
-        textOffset = 40;
+        textOffset = -20;
 
     }
 
     public void loadContent(Game game) {
         GraphicsDevice graphicsDevice = game.getGraphicsDevice();
 
-        fontTitle = graphicsDevice.createSpriteFont(null, 80);
+        fontTitle = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 100);
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 16);
-        textTitle.setText("I can't #e");
+        textTitle.setText("It's something!");
 
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
         textMenu = new TextBuffer[]{
@@ -76,17 +77,17 @@ public class MGDMenuState implements GameState {
         textMenu[3].setText("Quit");
 
         matrixMenu = new Matrix4x4[]{
-                Matrix4x4.createTranslation(-200, 0+textOffset, 0),
-                Matrix4x4.createTranslation(-200, -64+textOffset, 0),
-                Matrix4x4.createTranslation(-200, -128+textOffset, 0),
-                Matrix4x4.createTranslation(-200, -192+textOffset, 0)
+                Matrix4x4.createTranslation(-200, 0+(textOffset+1), 0),
+                Matrix4x4.createTranslation(-200, -64+(textOffset*2), 0),
+                Matrix4x4.createTranslation(-200, -128+(textOffset*3), 0),
+                Matrix4x4.createTranslation(-200, -192+(textOffset*4), 0)
         };
 
         aabbMenu = new AABB[]{
-                new AABB(-300, 0+textOffset, 300, 64),
-                new AABB(-300, -64+textOffset, 300, 64),
-                new AABB(-300, -128+textOffset, 300, 64),
-                new AABB(-300, -192+textOffset, 300, 64)
+                new AABB(-300, 0+(textOffset*1), 300, 64),
+                new AABB(-300, -64+(textOffset*2), 300, 64),
+                new AABB(-300, -128+(textOffset*3), 300, 64),
+                new AABB(-300, -192+(textOffset*4), 300, 64)
         };
 
         Context context = game.getContext();
@@ -166,9 +167,6 @@ public class MGDMenuState implements GameState {
         projection = new Matrix4x4();
         projection.setOrhtogonalProjection(-width / 2, width / 2, -height / 2, height / 2, 0.0f, 100.0f);
         menuCam.setProjection(projection);
-
-        matTitle.setIdentity();
-        matTitle.translate(-width / 2, height / 2 - 64, 0);
     }
 
     public void pause(Game game) {
