@@ -28,7 +28,11 @@ public class Filestuff {
             FileChannel channel = fIn.getChannel();
             if (channel.size() == 0) {
                 String a = "--N.V.--";
+<<<<<<< HEAD
+                for (int i=0;i<10;i++){
+=======
                 for (int i= 0;i<10;i++){
+>>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
                     score2[i][0] = a;
                     score2[i][1] = a;
                     score2[i][2] = a;
@@ -69,6 +73,7 @@ public class Filestuff {
         }
         return score2;
     }
+<<<<<<< HEAD
     public void setScore(int levelCounter, int pionts)
     {
         Calendar k = Calendar.getInstance();
@@ -81,6 +86,18 @@ public class Filestuff {
             {
                 if (y == 0 && score2[y][1]=="--N.V.--")
                 {
+=======
+    public void setScore(int levelCounter, int pionts) {
+        for (int y = 0; y < 10; y++) {
+
+            if (score2[y][1] == "--N.V.--") {
+                Calendar k = Calendar.getInstance();
+                int day = k.get(Calendar.DAY_OF_MONTH);
+                int month = k.get(Calendar.MONTH);
+                int year = k.get(Calendar.YEAR);
+                String date = day + "/" + month + "/" + year;
+                if (y == 0) {
+>>>>>>> 335dc3abac853ad9331787ea8af10355a70f4b90
                     score2[y][0] = date;
                     score2[y][1] = String.valueOf(pionts);
                     score2[y][2] = String.valueOf(levelCounter);

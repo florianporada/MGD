@@ -42,11 +42,11 @@ public class MGDGameState implements GameState {
 
 	private Matrix4x4 projection, view;
     //DECLARE TEXT
-    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount, matrixGameOver;
-    private SpriteFont fontHitCount, fontKillCount, fontLevelCount, fontGameOver;
-    private TextBuffer textHitCount, textKillCount, textLevelCount, textGameOver;
+    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount, matrixGameOver, matrixStartGame, matrixBack;
+    private SpriteFont fontHitCount, fontKillCount, fontLevelCount, fontGameOver, fontStartGame, fontBack;
+    private TextBuffer textHitCount, textKillCount, textLevelCount, textGameOver, textStartGame, textBack;
     //DECLARE CONTROLBOXES
-    private AABB controlLeftBox, controlRightBox, topLeft,topRight;
+    private AABB controlLeftBox, controlRightBox, topLeft, startGameBox;
     //OTHER BOXES
     private AABB bottomLineBox, topLineBox;
 
@@ -55,7 +55,7 @@ public class MGDGameState implements GameState {
     private JetObject jetObject;
     private WeaponObject missileObject;
 
-    private String[][] randomEnemyObjects = {{"cow.obj", "road.png",}, {"icosahedron.obj", "road.png"}, {"teapot.obj", "road.png"}, {"cube.obj", "road.png"}};
+    private String[][] randomEnemyObjects = {{"cow.obj", "road.png",}, {"sphere.obj", "road.png"}, {"teapot.obj", "road.png"}, {"cube.obj", "road.png"}};
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -130,12 +130,12 @@ public class MGDGameState implements GameState {
         controlRightBox = new AABB(0, -40f,22f, 20f);
         controlLeftBox = new AABB(-22f, -40f,22f, 20f);
         topLeft = new AABB(-22f, 30f, 22f, 10f);
-        topRight = new AABB(0, 30f, 22f, 10f);
+        startGameBox = new AABB(0, 0, 22f, 10f);
 
         //INIT BOXES AND SET BOOL
         atBottomA = false;
         atBottomB = false;
-        boxArrayA = boxDropper(boxCount, 40, 80);
+        boxArrayA = boxDropper(boxCount, 40, 120);
         //SET FIRST INITIALISATION VERY HEIGH
         boxArrayB = boxDropper(boxCount, 200, 200);
 
@@ -148,6 +148,9 @@ public class MGDGameState implements GameState {
         matrixKillCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 650, 0));
         matrixLevelCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 600, 0));
         matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
+        matrixStartGame = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
+        matrixBack = new Matrix4x4(Matrix4x4.createTranslation(200, 700, 0));
+
 
 
 
@@ -172,9 +175,13 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
+<<<<<<< HEAD
+            missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
+=======
             missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
             //LOAD POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
+>>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
             
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
@@ -210,6 +217,10 @@ public class MGDGameState implements GameState {
         fontGameOver = graphicsDevice.createSpriteFont(null, 120);
         textGameOver = graphicsDevice.createTextBuffer(fontGameOver, 16);
         textGameOver.setText("Game Over!");
+
+        fontStartGame = graphicsDevice.createSpriteFont(null, 120);
+        textStartGame = graphicsDevice.createTextBuffer(fontStartGame, 16);
+        textStartGame.setText("Start!");
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
@@ -263,7 +274,7 @@ public class MGDGameState implements GameState {
                             //COORDINATES TOUCH
                             System.out.println("WorldTouch X: "+worldTouchPosition.getX()+" WorldTouch Y: "+worldTouchPosition.getY());
 
-                            if(touchPoint.intersects(topRight)){
+                            if(touchPoint.intersects(startGameBox)){
                                 if (soundPool != null)
                                     soundPool.play(clickSound, 1, 1, 0, 0, 1);
                                 startGame = true;
@@ -421,7 +432,7 @@ public class MGDGameState implements GameState {
                 startGame = false;
                 if(gameOverTime > 5) {
                     gameOver = true;
-                    fs.setScore(levelCounter,killCounter);
+                    fs.setScore(3,10);
                     gameOver(game);
                 }
             }
