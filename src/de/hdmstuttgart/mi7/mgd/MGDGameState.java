@@ -168,7 +168,6 @@ public class MGDGameState implements GameState {
         if(graphicsDevice == null)
             graphicsDevice = game.getGraphicsDevice();
 
-
         try {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
