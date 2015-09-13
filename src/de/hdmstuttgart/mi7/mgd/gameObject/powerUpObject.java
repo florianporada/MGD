@@ -7,6 +7,7 @@ import de.hdmstuttgart.mi7.mgd.collision.Circle;
 import de.hdmstuttgart.mi7.mgd.graphics.GraphicsDevice;
 import de.hdmstuttgart.mi7.mgd.graphics.Material;
 import de.hdmstuttgart.mi7.mgd.graphics.Mesh;
+import de.hdmstuttgart.mi7.mgd.math.MathHelper;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 
 import java.io.IOException;
@@ -15,6 +16,13 @@ import java.io.IOException;
  * Created by florianporada on 12.09.15.
  */
 public class PowerUpObject extends GameObject {
+
+    private boolean alive = true;
+    private int powerup = MathHelper.randInt(0,2);
+    private float shootSpeed = 0.019f;
+    private float controlSpeed = 0.01f;
+    private float boxSpeed = 0.019f;
+
     public PowerUpObject(View view) {
         super(view);
     }
@@ -25,6 +33,46 @@ public class PowerUpObject extends GameObject {
 
     public PowerUpObject(Matrix4x4 matrix, float hitBoxRadius) {
         super(matrix, hitBoxRadius);
+    }
+
+    public int getPowerup() {
+        return powerup;
+    }
+
+    public void setPowerup(int powerup) {
+        this.powerup = powerup;
+    }
+
+    public float getShootSpeed() {
+        return shootSpeed;
+    }
+
+    public void setShootSpeed(float shootSpeed) {
+        this.shootSpeed = shootSpeed;
+    }
+
+    public float getBoxSpeed() {
+        return boxSpeed;
+    }
+
+    public void setBoxSpeed(float boxSpeed) {
+        this.boxSpeed = boxSpeed;
+    }
+
+    public float getControlSpeed() {
+        return controlSpeed;
+    }
+
+    public void setControlSpeed(float controlSpeed) {
+        this.controlSpeed = controlSpeed;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override

@@ -19,6 +19,7 @@ import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.game.GameState;
 import de.hdmstuttgart.mi7.mgd.gameObject.EnemyObject;
 import de.hdmstuttgart.mi7.mgd.gameObject.JetObject;
+import de.hdmstuttgart.mi7.mgd.gameObject.PowerUpObject;
 import de.hdmstuttgart.mi7.mgd.gameObject.WeaponObject;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
@@ -50,6 +51,7 @@ public class MGDGameState implements GameState {
     private AABB bottomLineBox, topLineBox;
 
     //GAMEOBJECTS
+    private PowerUpObject powerUpObject;
     private JetObject jetObject;
     private WeaponObject missileObject;
 
@@ -72,7 +74,7 @@ public class MGDGameState implements GameState {
     private ArrayList<EnemyObject> boxArrayA, boxArrayB;
 
     //LVL DIFFICULTY
-    float lvlTime, gameOverTime;
+    float lvlTime, gameOverTime,powerUpTime;
     int boxCount;
 
     //TEST
@@ -153,6 +155,7 @@ public class MGDGameState implements GameState {
 
 
         //GAMEOBJECTS
+        powerUpObject = new PowerUpObject(new Matrix4x4(Matrix4x4.createTranslation(0,35,0)),2f,2f);
         jetObject = new JetObject(new Matrix4x4(Matrix4x4.createTranslation(0, -15f, 0)), 5f, 5f);
         jetObject.getMatrix().scale(0.7f);
 
@@ -173,7 +176,13 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
+<<<<<<< HEAD
             missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
+=======
+            missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
+            //LOAD POWERUP
+            powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
+>>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
             
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
@@ -352,7 +361,13 @@ public class MGDGameState implements GameState {
                     enemyHitAction(o);
                 }
 
-                if(topLineBox.intersects(missileObject.getHitBoxAABB())){
+                if(jetObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) || missileObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) && missileObject.isAlive())
+                {
+                    powerUpAction(deltaSeconds);
+                }
+
+                if(topLineBox.intersects(missileObject.getHitBoxAABB()))
+                {
                     missileObject.setAlive(false);
                     missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
                     System.out.println("missile weg");
@@ -563,5 +578,45 @@ public class MGDGameState implements GameState {
         mediaPlayer.release();
         game.getGameStateManager().setGameState(new MGDHighscoreState());
     }
+    public void powerUpAction(float deltaseconds) {
+        powerUpTime += deltaseconds;
 
+
+        switch (powerUpObject.getPowerup()) {
+            case 0:
+                for (EnemyObject b : boxArrayA) {
+                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
+                }
+                for (EnemyObject b : boxArrayB) {
+                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
+                }
+                break;
+            case 1:
+                jetObject.setControlSpeed(jetObject.getControlSpeed() + powerUpObject.getControlSpeed());
+                break;
+            case 2:
+                missileObject.setMissileSpeed(missileObject.getMissileSpeed() + powerUpObject.getShootSpeed());
+                break;
+        }
+        if (powerUpTime > 20) {
+
+            switch (powerUpObject.getPowerup()) {
+                case 0:
+                    for (EnemyObject b : boxArrayA) {
+                        b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                    }
+                    for (EnemyObject b : boxArrayB) {
+                        b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                    }
+                    break;
+                case 1:
+                    jetObject.setControlSpeed(jetObject.getControlSpeed() - powerUpObject.getControlSpeed());
+                    break;
+                case 2:
+                    missileObject.setMissileSpeed(missileObject.getMissileSpeed() - powerUpObject.getShootSpeed());
+                    break;
+            }
+        }
+    }
 }
+
