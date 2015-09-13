@@ -19,9 +19,6 @@ import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
 import de.hdmstuttgart.mmi.mgd.R;
 
-import java.io.*;
-import java.io.FileOutputStream;
-
 
 /**
  * Created by christophkramer on 09.09.15.
