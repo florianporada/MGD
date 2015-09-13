@@ -14,6 +14,7 @@ import android.media.SoundPool;
 import android.view.KeyEvent;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
+import de.hdmstuttgart.mi7.mgd.game.Filestuff;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.game.GameState;
 import de.hdmstuttgart.mi7.mgd.gameObject.EnemyObject;
@@ -33,6 +34,7 @@ public class MGDGameState implements GameState {
     private GraphicsDevice graphicsDevice;
     private Context context;
     Renderer renderer;
+    private Filestuff fs;
 
 
     private Camera sceneCam, hudCam;
@@ -83,6 +85,8 @@ public class MGDGameState implements GameState {
 
         float width = game.getScreenWidth();
         float height = game.getScreenHeight();
+
+        fs = new Filestuff(game);
 
         //SCENECAM
         projection = new Matrix4x4();
@@ -407,7 +411,7 @@ public class MGDGameState implements GameState {
                 startGame = false;
                 if(gameOverTime > 5) {
                     gameOver = true;
-                    //TODO: HIER NOCH ÜBERGABE AN HIGHSCORESTATE BZW IN DIE DATENBANK SCHREIBEN
+                    fs.setScore(levelCounter,killCounter);
                     gameOver(game);
                 }
             }
