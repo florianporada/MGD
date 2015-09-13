@@ -84,10 +84,10 @@ public class MGDMenuState implements GameState {
         };
 
         aabbMenu = new AABB[]{
-                new AABB(-300, 0+(textOffset*1), 300, 64),
-                new AABB(-300, -64+(textOffset*2), 300, 64),
-                new AABB(-300, -128+(textOffset*3), 300, 64),
-                new AABB(-300, -192+(textOffset*4), 300, 64)
+                new AABB(-300, 0+(textOffset*1), 500, 64),
+                new AABB(-300, -64+(textOffset*2), 500, 64),
+                new AABB(-300, -128+(textOffset*3), 500, 64),
+                new AABB(-300, -192+(textOffset*4), 500, 64)
         };
 
         Context context = game.getContext();

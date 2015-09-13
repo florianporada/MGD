@@ -31,7 +31,7 @@ public class Filestuff {
             File f = game.getContext().getFileStreamPath("drivingsim2");
             if (f.length() == 0) {
                 String a = "--N.V.--";
-                for (int i= 1;i<11;i++){
+                for (int i=0;i<10;i++){
                     score2[i][0] = a;
                     score2[i][1] = a;
                     score2[i][2] = a;
@@ -76,7 +76,7 @@ public class Filestuff {
     public void setScore(int levelCounter, int pionts) {
         for (int y = 0; y < 10; y++) {
 
-            if (score2[y][1] == "--N.V.--" || pionts >= Integer.parseInt(score2[y][1])) {
+            if (score2[y][1] == "--N.V.--") {
                 Calendar k = Calendar.getInstance();
                 int day = k.get(Calendar.DAY_OF_MONTH);
                 int month = k.get(Calendar.MONTH);
