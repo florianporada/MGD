@@ -175,13 +175,10 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
-<<<<<<< HEAD
-            missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
-=======
+
             missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
             //LOAD POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
->>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
             
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){

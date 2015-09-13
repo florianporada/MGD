@@ -196,6 +196,11 @@ public class MGDMenuState implements GameState {
                 game.getGameStateManager().setGameState(new MGDHighscoreState());
                 break;
 
+            case 2:
+                mediaPlayer.release();
+                game.getGameStateManager().setGameState(new MGDCreditState());
+                break;
+
             case 3:
                 game.finish();
                 break;
