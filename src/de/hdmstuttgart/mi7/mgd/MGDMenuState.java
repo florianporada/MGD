@@ -187,13 +187,11 @@ public class MGDMenuState implements GameState {
     private void onMenuItemClicked(Game game, int i) {
         switch (i) {
             case 0:
-                mediaPlayer.stop();
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDGameState());
                 break;
 
             case 1:
-                mediaPlayer.stop();
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDHighscoreState());
                 break;
