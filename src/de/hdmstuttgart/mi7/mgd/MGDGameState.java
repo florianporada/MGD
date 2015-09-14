@@ -29,6 +29,7 @@ import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
 import de.hdmstuttgart.mmi.mgd.R;
 
+import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randInt;
 import static de.hdmstuttgart.mi7.mgd.math.MathHelper.randfloat;
 
 public class MGDGameState implements GameState {
@@ -42,9 +43,9 @@ public class MGDGameState implements GameState {
 
 	private Matrix4x4 projection, view;
     //DECLARE TEXT
-    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount, matrixGameOver, matrixStartGame, matrixBack;
-    private SpriteFont fontHitCount, fontKillCount, fontLevelCount, fontGameOver, fontStartGame, fontBack;
-    private TextBuffer textHitCount, textKillCount, textLevelCount, textGameOver, textStartGame, textBack;
+    private Matrix4x4 matrixHitCount, matrixKillCount, matrixLevelCount, matrixGameOver, matrixStartGame, matrixBack, matrixPowerup;
+    private SpriteFont fontHitCount, fontKillCount, fontLevelCount, fontGameOver, fontStartGame, fontBack, fontPowerup;
+    private TextBuffer textHitCount, textKillCount, textLevelCount, textGameOver, textStartGame, textBack, textPowerup;
     //DECLARE CONTROLBOXES
     private AABB controlLeftBox, controlRightBox, topLeft, startGameBox;
     //OTHER BOXES
@@ -60,21 +61,21 @@ public class MGDGameState implements GameState {
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
     private SoundPool soundPool;
-    private int clickSound, duckSound1, duckSound2, noSound, fartSound;
+    private int clickSound, duckSound1, duckSound2, noSound, fartSound, yeahSound;
 
     //CONTROL BOOLEANS
     private boolean pressedLeft , pressedRight;
     //BOXGENERATOR BOOLEANS
     private boolean atBottomA, atBottomB;
 
-    private boolean startGame, gameOver;
+    private boolean startGame, gameOver, triggerLevelCounter;
     //COUNTER
-    private int hitCounter, killCounter, levelCounter;
+    private int hitCounter, killCounter, levelCounter, levelUpCounter;
     //ENEMYOBJECTS
     private ArrayList<EnemyObject> boxArrayA, boxArrayB;
 
     //LVL DIFFICULTY
-    float lvlTime, gameOverTime,powerUpTime;
+    float lvlTime, gameOverTime, powerUpTime;
     int boxCount;
 
     //TEST
@@ -113,10 +114,12 @@ public class MGDGameState implements GameState {
         hitCounter = 10;
         levelCounter = 0;
         killCounter = 0;
+        levelUpCounter = 0;
 
         //BOOLS
         startGame = false;
         gameOver = false;
+        triggerLevelCounter = false;
 
         //INTS
         lvlTime = 0;
@@ -130,7 +133,8 @@ public class MGDGameState implements GameState {
         controlRightBox = new AABB(0, -40f,22f, 20f);
         controlLeftBox = new AABB(-22f, -40f,22f, 20f);
         topLeft = new AABB(-22f, 30f, 22f, 10f);
-        startGameBox = new AABB(0, 0, 22f, 10f);
+        startGameBox = new AABB(-25, -40, 50f, 80f);
+
 
         //INIT BOXES AND SET BOOL
         atBottomA = false;
@@ -148,8 +152,9 @@ public class MGDGameState implements GameState {
         matrixKillCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 650, 0));
         matrixLevelCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 600, 0));
         matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
-        matrixStartGame = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
+        matrixStartGame = new Matrix4x4(Matrix4x4.createTranslation(-400, 0, 0));
         matrixBack = new Matrix4x4(Matrix4x4.createTranslation(200, 700, 0));
+        matrixPowerup =  new Matrix4x4(Matrix4x4.createTranslation(-100, 700, 0));
 
 
 
@@ -176,14 +181,10 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
-<<<<<<< HEAD
             missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
-=======
-            missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
-            //LOAD POWERUP
+            //POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
->>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
-            
+
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
                 int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));
@@ -221,7 +222,10 @@ public class MGDGameState implements GameState {
 
         fontStartGame = graphicsDevice.createSpriteFont(null, 120);
         textStartGame = graphicsDevice.createTextBuffer(fontStartGame, 16);
-        textStartGame.setText("Start!");
+        textStartGame.setText("Click to Start!");
+
+        fontPowerup = graphicsDevice.createSpriteFont(null, 64);
+        textPowerup = graphicsDevice.createTextBuffer(fontPowerup, 16);
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
@@ -239,6 +243,7 @@ public class MGDGameState implements GameState {
         duckSound2 = soundPool.load(context, R.raw.duck2, 1);
         noSound = soundPool.load(context, R.raw.no, 1);
         fartSound = soundPool.load(context, R.raw.fart, 1);
+        yeahSound = soundPool.load(context, R.raw.yeah, 1);
 
     }
 
@@ -275,7 +280,7 @@ public class MGDGameState implements GameState {
                             //COORDINATES TOUCH
                             System.out.println("WorldTouch X: "+worldTouchPosition.getX()+" WorldTouch Y: "+worldTouchPosition.getY());
 
-                            if(touchPoint.intersects(startGameBox)){
+                            if(touchPoint.intersects(startGameBox) && !startGame){
                                 if (soundPool != null)
                                     soundPool.play(clickSound, 1, 1, 0, 0, 1);
                                 startGame = true;
@@ -361,17 +366,10 @@ public class MGDGameState implements GameState {
                     enemyHitAction(o);
                 }
 
-                if(jetObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) || missileObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) && missileObject.isAlive())
-                {
-                    powerUpAction(deltaSeconds);
-                }
-
-                if(topLineBox.intersects(missileObject.getHitBoxAABB()))
-                {
+                if(topLineBox.intersects(missileObject.getHitBoxAABB())) {
                     missileObject.setAlive(false);
                     missileObject.setMatrix(new Matrix4x4(jetObject.getMatrix()));
                     System.out.println("missile weg");
-
                 }
 
                 //MISSILE SHOOOOOOOT
@@ -408,8 +406,38 @@ public class MGDGameState implements GameState {
                     //System.out.println("trigger boxArrayA");
                 }
 
+                //POWERUP
+                if(jetObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) || missileObject.getHitBoxAABB().intersects(powerUpObject.getHitBoxAABB()) && powerUpObject.isAlive()) {
+                    powerUpAction();
+                    powerUpObject.setMatrix(new Matrix4x4(Matrix4x4.createTranslation(randfloat(-25, 25), randfloat(40, 300), 0)));
+                    //powerUpObject.setPowerup(randInt(0, 2));
+                    powerUpObject.setAlive(true);
+                    powerUpObject.setActive(true);
+                }
+
+                if(bottomLineBox.intersects(powerUpObject.getHitBoxAABB())){
+                    powerUpObject.setMatrix(new Matrix4x4(Matrix4x4.createTranslation(randfloat(-25, 25),randfloat(40, 300), 0)));
+                    //powerUpObject.setPowerup(randInt(0, 2));
+                    powerUpObject.setAlive(true);
+                }
+
+                powerUpObject.getMatrix().translate(0, -0.10f, 0);
+                powerUpObject.updateHitBoxAABB();
+
+                powerUpTime += deltaSeconds;
+                if(powerUpTime > 20 && powerUpObject.isActive()) {
+                    powerUpActionReset();
+                    powerUpObject.setActive(false);
+                    powerUpTime = 0;
+                }
+
+                if(triggerLevelCounter){
+                    levelCounter++;
+                    triggerLevelCounter = false;
+                }
+
                 lvlTime += deltaSeconds;
-                if(lvlTime > 80){
+                if(levelUpCounter > 1){
                     System.out.println("lvl up!");
                     for(EnemyObject o : boxArrayA){
                         o.setSpeed(o.getSpeed()-0.019f);
@@ -419,6 +447,7 @@ public class MGDGameState implements GameState {
                     }
                     levelCounter += 1;
                     textLevelCount.setText("Level: "+levelCounter);
+                    levelUpCounter = 0;
                     lvlTime = 0;
                 }
             //######################## END startGame BLOCK ##############################
@@ -470,15 +499,23 @@ public class MGDGameState implements GameState {
             if(missileObject.isAlive())
                 renderer.drawMesh(missileObject.getMesh(), missileObject.getMatrix(), missileObject.getMaterial());
 
+            //POWER UP
+            renderer.drawMesh(powerUpObject.getMesh(), powerUpObject.getMatrix(), powerUpObject.getMaterial());
+
             //Stuff for HUD
             graphicsDevice.setCamera(hudCam);
             renderer.drawText(textHitCount, matrixHitCount);
             renderer.drawText(textKillCount, matrixKillCount);
             renderer.drawText(textLevelCount, matrixLevelCount);
+            renderer.drawText(textPowerup, matrixPowerup);
+
         }
         graphicsDevice.setCamera(hudCam);
-        if(!jetObject.isAlive() && !startGame){
-            renderer.drawText(textGameOver, matrixGameOver);
+        if(!startGame){
+            if(hitCounter != 0)
+                renderer.drawText(textStartGame, matrixStartGame);
+            if(!jetObject.isAlive())
+                renderer.drawText(textGameOver, matrixGameOver);
         }
     }
 
@@ -578,45 +615,61 @@ public class MGDGameState implements GameState {
         mediaPlayer.release();
         game.getGameStateManager().setGameState(new MGDHighscoreState());
     }
-    public void powerUpAction(float deltaseconds) {
-        powerUpTime += deltaseconds;
 
+    public void powerUpAction() {
+        powerUpObject.setAlive(false);
+        if(soundPool != null)
+            soundPool.play(fartSound, 1, 1, 1, 0, 1);
+        powerUpObject.getMatrix().scale(0.00000001f);
 
         switch (powerUpObject.getPowerup()) {
             case 0:
                 for (EnemyObject b : boxArrayA) {
-                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
+                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
                 }
                 for (EnemyObject b : boxArrayB) {
-                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
+                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
                 }
+                System.out.println("Slow Enemies");
+                textPowerup.setText("Slow Enemies");
                 break;
             case 1:
                 jetObject.setControlSpeed(jetObject.getControlSpeed() + powerUpObject.getControlSpeed());
+                System.out.println("Faster Jet");
+                textPowerup.setText("Faster Jet");
                 break;
             case 2:
                 missileObject.setMissileSpeed(missileObject.getMissileSpeed() + powerUpObject.getShootSpeed());
+                System.out.println("Shoot faster");
+                textPowerup.setText("Shoot faster");
                 break;
         }
-        if (powerUpTime > 20) {
 
-            switch (powerUpObject.getPowerup()) {
-                case 0:
-                    for (EnemyObject b : boxArrayA) {
-                        b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
-                    }
-                    for (EnemyObject b : boxArrayB) {
-                        b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
-                    }
-                    break;
-                case 1:
-                    jetObject.setControlSpeed(jetObject.getControlSpeed() - powerUpObject.getControlSpeed());
-                    break;
-                case 2:
-                    missileObject.setMissileSpeed(missileObject.getMissileSpeed() - powerUpObject.getShootSpeed());
-                    break;
-            }
+    }
+
+    public void powerUpActionReset() {
+        textPowerup.setText("");
+        switch (powerUpObject.getPowerup()) {
+            case 0:
+                for (EnemyObject b : boxArrayA) {
+                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                }
+                for (EnemyObject b : boxArrayB) {
+                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                }
+                System.out.println("");
+                textPowerup.setText("Slow Enemies gone");
+                break;
+            case 1:
+                jetObject.setControlSpeed(jetObject.getControlSpeed() + powerUpObject.getControlSpeed());
+                textPowerup.setText("Faster Jet gone");
+                break;
+            case 2:
+                missileObject.setMissileSpeed(missileObject.getMissileSpeed() + powerUpObject.getShootSpeed());
+                textPowerup.setText("Shoot faster gone");
+                break;
         }
     }
+
 }
 

@@ -18,9 +18,10 @@ import java.io.IOException;
 public class PowerUpObject extends GameObject {
 
     private boolean alive = true;
+    private boolean active = false;
     private int powerup = MathHelper.randInt(0,2);
     private float shootSpeed = 0.019f;
-    private float controlSpeed = 0.01f;
+    private float controlSpeed = 0.41f;
     private float boxSpeed = 0.019f;
 
     public PowerUpObject(View view) {
@@ -73,6 +74,14 @@ public class PowerUpObject extends GameObject {
 
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

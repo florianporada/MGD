@@ -31,11 +31,7 @@ public class Filestuff {
             File f = game.getContext().getFileStreamPath("drivingsim2");
             if (f.length() == 0) {
                 String a = "--N.V.--";
-<<<<<<< HEAD
                 for (int i=0;i<10;i++){
-=======
-                for (int i= 0;i<10;i++){
->>>>>>> 255c09b974fd06b8bc1ce8f852152a34d93a13b4
                     score2[i][0] = a;
                     score2[i][1] = a;
                     score2[i][2] = a;
