@@ -187,6 +187,7 @@ public class MGDMenuState implements GameState {
     private void onMenuItemClicked(Game game, int i) {
         switch (i) {
             case 0:
+                textMenu[0].setText("LOADING!...");
                 mediaPlayer.release();
                 game.getGameStateManager().setGameState(new MGDGameState());
                 break;
