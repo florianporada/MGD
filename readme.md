@@ -32,4 +32,6 @@ Some Infos about the code
 - Durch einen Gametimecounter wird die Boxgeschwindigkeit immer weiter hochgesetzt um die Schwierigkeit zu erhöhen. 
 - Es gibt drei verschiedene Power-ups (Schnellerer Jet, Schnellerer Schuss, Langsamere Gegner). Alle werden über das Powerupobject definiert.
 - Der Mediaplayer bugt ein bisschen aber lässt das Spiel nicht abstürzen.
+- Manchmal wird der MediaPlayer nicht richtig geladen, ein Neustart des Spiels hilft meistens.
+- Der Highscore State gibt zurzeit leider nur die Daten der letzten Session aus. (sollte aber für den Punkt persistente Daten reichen. Proof of Concept)
 - Control CheatSheet unter Docs/controls.jpg

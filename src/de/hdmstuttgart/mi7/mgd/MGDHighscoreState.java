@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Environment;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
+import de.hdmstuttgart.mi7.mgd.game.FileWriter;
 import de.hdmstuttgart.mi7.mgd.game.Filestuff;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.game.GameState;
@@ -28,6 +29,7 @@ public class MGDHighscoreState implements GameState {
 
     private Camera menuCam;
     private Filestuff fs;
+    private FileWriter fileWriter;
 
     private SpriteFont fontTitle;
     private TextBuffer textTitle;
@@ -47,6 +49,8 @@ public class MGDHighscoreState implements GameState {
     public void initialize(Game game) {
 
         fs = new Filestuff(game);
+        fileWriter = new FileWriter(game);
+
 
         float width = game.getScreenWidth();
         float height = game.getScreenHeight();
@@ -67,9 +71,10 @@ public class MGDHighscoreState implements GameState {
         String[][] score2 = fs.getScore();
         GraphicsDevice graphicsDevice = game.getGraphicsDevice();
 
+        System.out.println("myText: "+fileWriter.readFromFile());
+
         fontTitle = graphicsDevice.createSpriteFont(type, 96);
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 20);
-        textTitle.setText("DrivingSim");
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
         textMenu = new TextBuffer[]{
                 graphicsDevice.createTextBuffer(fontTitle, 20),
@@ -85,7 +90,7 @@ public class MGDHighscoreState implements GameState {
                 graphicsDevice.createTextBuffer(fontMenu, 20),
                 graphicsDevice.createTextBuffer(fontMenu, 20)
         };
-        textMenu[0].setText("Highscore");
+        textMenu[0].setText("Last Score");
         textMenu2 = new TextBuffer[]{
                 graphicsDevice.createTextBuffer(fontTitle, 30),
                 graphicsDevice.createTextBuffer(fontMenu, 30),
@@ -160,14 +165,16 @@ public class MGDHighscoreState implements GameState {
 
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
 
-        for (int i=1;i<11;i++){
-
-            String name = i+". "+score2[(i-1)][0]+" :";
-            String pionts = score2[(i-1)][1]+" Pionts, LvL: "+score2[(i-1)][2];
-
-            textMenu[i].setText(name);
-            textMenu2[i].setText(pionts);
-        }
+//        for (int i=1;i<11;i++){
+//
+//            String name = i+". "+score2[(i-1)][0]+" :";
+//            String pionts = score2[(i-1)][1]+" Pionts, LvL: "+score2[(i-1)][2];
+//
+//            textMenu[i].setText(name);
+//            textMenu2[i].setText(pionts);
+//        }
+        textMenu[1].setText("last score");
+        textMenu2[1].setText(fileWriter.readFromFile());
         textMenu[11].setText("back");
 
 

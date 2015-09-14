@@ -14,6 +14,7 @@ import android.media.SoundPool;
 import android.view.KeyEvent;
 import de.hdmstuttgart.mi7.mgd.collision.AABB;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
+import de.hdmstuttgart.mi7.mgd.game.FileWriter;
 import de.hdmstuttgart.mi7.mgd.game.Filestuff;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.game.GameState;
@@ -37,6 +38,7 @@ public class MGDGameState implements GameState {
     private Context context;
     Renderer renderer;
     private Filestuff fs;
+    private FileWriter fileWriter;
 
 
     private Camera sceneCam, hudCam;
@@ -91,6 +93,7 @@ public class MGDGameState implements GameState {
         float height = game.getScreenHeight();
 
         fs = new Filestuff(game);
+        fileWriter = new FileWriter(game);
 
         //SCENECAM
         projection = new Matrix4x4();
@@ -455,8 +458,10 @@ public class MGDGameState implements GameState {
                 startGame = false;
                 if(gameOverTime > 5) {
                     gameOver = true;
-                    fs.setScore(levelCounter,killCounter);
-                    System.out.println("Level: "+levelCounter+" Kills: "+killCounter);
+                    //fs.setScore(levelCounter, killCounter);
+                    System.out.println("Level: " + levelCounter + " Kills: " + killCounter);
+                    fileWriter.writeToFile("Level: " + levelCounter + " Kills: " + killCounter);
+                    System.out.println(fileWriter.readFromFile());
                     gameOver(game);
                 }
             }
