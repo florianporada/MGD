@@ -728,7 +728,7 @@ public class MGDGameState implements GameState {
                         {
                             int p = 1000;
                             try {
-                                p = Integer.parseInt(score2[y][1]);
+                                p = Integer.parseInt(score2[y][2]);
                             }catch (Exception e){
 
                             }
