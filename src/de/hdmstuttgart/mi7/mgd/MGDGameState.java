@@ -174,15 +174,22 @@ public class MGDGameState implements GameState {
         if(graphicsDevice == null)
             graphicsDevice = game.getGraphicsDevice();
 
-
         try {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
+<<<<<<< HEAD
             missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
             //POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
 
+=======
+
+            missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
+            //LOAD POWERUP
+            powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
+            
+>>>>>>> 3b938b9647afadbc1d021c44a7e2385b2bef9f04
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
                 int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));

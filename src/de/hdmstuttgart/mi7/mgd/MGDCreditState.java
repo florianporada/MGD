@@ -17,9 +17,9 @@ import de.hdmstuttgart.mi7.mgd.math.Vector3;
 import de.hdmstuttgart.mmi.mgd.R;
 
 /**
- * Created by florianporada on 28.08.15.
+ * Created by christophkramer on 14.09.15.
  */
-public class MGDMenuState implements GameState {
+public class MGDCreditState implements GameState {
 
     private Camera menuCam;
 
@@ -66,15 +66,15 @@ public class MGDMenuState implements GameState {
 
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
         textMenu = new TextBuffer[]{
-                graphicsDevice.createTextBuffer(fontMenu, 16),
-                graphicsDevice.createTextBuffer(fontMenu, 16),
-                graphicsDevice.createTextBuffer(fontMenu, 16),
-                graphicsDevice.createTextBuffer(fontMenu, 16)
+                graphicsDevice.createTextBuffer(fontMenu, 30),
+                graphicsDevice.createTextBuffer(fontMenu, 30),
+                graphicsDevice.createTextBuffer(fontMenu, 30),
+                graphicsDevice.createTextBuffer(fontMenu, 30)
         };
-        textMenu[0].setText("Start Game");
-        textMenu[1].setText("Highscore");
-        textMenu[2].setText("Credits");
-        textMenu[3].setText("Quit");
+        textMenu[0].setText("Game by:");
+        textMenu[1].setText("Florian Porada &");
+        textMenu[2].setText("Christop Kramer");
+        textMenu[3].setText("Back");
 
         matrixMenu = new Matrix4x4[]{
                 Matrix4x4.createTranslation(-200, 0+(textOffset+1), 0),
@@ -84,10 +84,10 @@ public class MGDMenuState implements GameState {
         };
 
         aabbMenu = new AABB[]{
-                new AABB(-300, 0+(textOffset*1), 500, 64),
-                new AABB(-300, -64+(textOffset*2), 500, 64),
-                new AABB(-300, -128+(textOffset*3), 500, 64),
-                new AABB(-300, -192+(textOffset*4), 500, 64)
+                new AABB(-300, 0+(textOffset*1), 300, 64),
+                new AABB(-300, -64+(textOffset*2), 300, 64),
+                new AABB(-300, -128+(textOffset*3), 300, 64),
+                new AABB(-300, -192+(textOffset*4), 300, 64)
         };
 
         Context context = game.getContext();
@@ -130,17 +130,14 @@ public class MGDMenuState implements GameState {
                                     worldTouchPosition.getX(),
                                     worldTouchPosition.getY());
 
-                            for (int i = 0; i < aabbMenu.length; ++i) {
-                                AABB aabb = aabbMenu[i];
-                                if (touchPoint.intersects(aabb)) {
-                                    if (soundPool != null)
-                                        soundPool.play(clickSound, 1, 1, 0, 0, 1);
-
-                                    onMenuItemClicked(game, i);
-                                }
+                            AABB aabb = aabbMenu[3];
+                            if (touchPoint.intersects(aabb)) {
+                                if (soundPool != null)
+                                    soundPool.play(clickSound, 1, 1, 0, 0, 1);
+                                onMenuItemClicked(game);
                             }
-                    }
                     break;
+                }
             }
 
             inputSystem.popEvent();
@@ -184,27 +181,9 @@ public class MGDMenuState implements GameState {
 
     }
 
-    private void onMenuItemClicked(Game game, int i) {
-        switch (i) {
-            case 0:
-                textMenu[0].setText("LOADING!...");
+    private void onMenuItemClicked(Game game) {
                 mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDGameState());
-                break;
+                game.getGameStateManager().setGameState(new MGDMenuState());
 
-            case 1:
-                mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDHighscoreState());
-                break;
-
-            case 2:
-                mediaPlayer.release();
-                game.getGameStateManager().setGameState(new MGDCreditState());
-                break;
-
-            case 3:
-                game.finish();
-                break;
-        }
     }
 }
