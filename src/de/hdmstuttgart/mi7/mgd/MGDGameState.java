@@ -38,7 +38,6 @@ public class MGDGameState implements GameState {
     private GraphicsDevice graphicsDevice;
     private Context context;
     Renderer renderer;
-    private Filestuff fs;
     private FileWriter fileWriter;
     String nv;
     String string;
@@ -468,8 +467,6 @@ public class MGDGameState implements GameState {
                 startGame = false;
                 if(gameOverTime > 5) {
                     gameOver = true;
-                    //fs.setScore(levelCounter, killCounter);
-                    System.out.println("Level: " + levelCounter + " Kills: " + killCounter);
                     String data = createHighScore();
                     fileWriter.writeToFile(data);
                     gameOver(game);
@@ -584,7 +581,7 @@ public class MGDGameState implements GameState {
         if (soundPool != null)
             soundPool.play(duckSound1, 1, 1, 0, 0, 1);
         hitCounter--;
-        textHitCount.setText("Hits: " + hitCounter);
+        textHitCount.setText("Life: " + hitCounter);
         System.out.println("peng!!");
     }
 
