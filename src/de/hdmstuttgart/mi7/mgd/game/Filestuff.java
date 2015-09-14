@@ -28,13 +28,8 @@ public class Filestuff {
             FileChannel channel = fIn.getChannel();
             if (channel.size() == 0) {
                 String a = "--N.V.--";
-<<<<<<< HEAD
                 for (int i=0;i<10;i++){
-=======
 
-                for (int i= 0;i<10;i++){
-
->>>>>>> 3b938b9647afadbc1d021c44a7e2385b2bef9f04
                     score2[i][0] = a;
                     score2[i][1] = a;
                     score2[i][2] = a;

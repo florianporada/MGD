@@ -150,12 +150,9 @@ public class MGDGameState implements GameState {
         matrixKillCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 650, 0));
         matrixLevelCount = new Matrix4x4(Matrix4x4.createTranslation(-500, 600, 0));
         matrixGameOver = new Matrix4x4(Matrix4x4.createTranslation(-275, 0, 0));
-        matrixStartGame = new Matrix4x4(Matrix4x4.createTranslation(-400, 0, 0));
-        matrixBack = new Matrix4x4(Matrix4x4.createTranslation(200, 700, 0));
+        matrixStartGame = new Matrix4x4(Matrix4x4.createTranslation(-350, 0, 0));
+        matrixBack = new Matrix4x4(Matrix4x4.createTranslation(-530, 770, 0));
         matrixPowerup =  new Matrix4x4(Matrix4x4.createTranslation(-100, 700, 0));
-
-
-
 
         //GAMEOBJECTS
         powerUpObject = new PowerUpObject(new Matrix4x4(Matrix4x4.createTranslation(0,35,0)),2f,2f);
@@ -178,18 +175,10 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
-<<<<<<< HEAD
             missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
             //POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
 
-=======
-
-            missileObject.loadObject("box.obj", "box.png", graphicsDevice, context);
-            //LOAD POWERUP
-            powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
-            
->>>>>>> 3b938b9647afadbc1d021c44a7e2385b2bef9f04
             //LOAD BOX A ARRAY
             for(EnemyObject o : boxArrayA){
                 int i = MathHelper.randInt(0, (randomEnemyObjects.length-1));
@@ -228,6 +217,10 @@ public class MGDGameState implements GameState {
         fontStartGame = graphicsDevice.createSpriteFont(null, 120);
         textStartGame = graphicsDevice.createTextBuffer(fontStartGame, 16);
         textStartGame.setText("Click to Start!");
+
+        fontBack = graphicsDevice.createSpriteFont(null, 64);
+        textBack = graphicsDevice.createTextBuffer(fontBack, 16);
+        textBack.setText("Menu");
 
         fontPowerup = graphicsDevice.createSpriteFont(null, 64);
         textPowerup = graphicsDevice.createTextBuffer(fontPowerup, 16);
@@ -291,6 +284,7 @@ public class MGDGameState implements GameState {
                                 startGame = true;
                             }
                             if(touchPoint.intersects(topLeft)){
+                                startGame = false;
                                 if (mediaPlayer != null)
                                     mediaPlayer.release();
                                 game.getGameStateManager().setGameState(new MGDMenuState());
@@ -506,6 +500,7 @@ public class MGDGameState implements GameState {
             renderer.drawText(textKillCount, matrixKillCount);
             renderer.drawText(textLevelCount, matrixLevelCount);
             renderer.drawText(textPowerup, matrixPowerup);
+            renderer.drawText(textBack, matrixBack);
 
         }
         graphicsDevice.setCamera(hudCam);
@@ -652,10 +647,10 @@ public class MGDGameState implements GameState {
         switch (powerUpObject.getPowerup()) {
             case 0:
                 for (EnemyObject b : boxArrayA) {
-                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
                 }
                 for (EnemyObject b : boxArrayB) {
-                    b.setSpeed(b.getSpeed() + powerUpObject.getBoxSpeed());
+                    b.setSpeed(b.getSpeed() - powerUpObject.getBoxSpeed());
                 }
                 System.out.println("Slow Enemies gone");
                 break;

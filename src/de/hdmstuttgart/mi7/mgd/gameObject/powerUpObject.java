@@ -20,9 +20,9 @@ public class PowerUpObject extends GameObject {
     private boolean alive = true;
     private boolean active = false;
     private int powerup = MathHelper.randInt(0,2);
-    private float shootSpeed = 0.059f;
-    private float controlSpeed = 0.31f;
-    private float boxSpeed = 0.019f;
+    private float shootSpeed = 0.1f;
+    private float controlSpeed = 0.3f;
+    private float boxSpeed = 0.04f;
 
     public PowerUpObject(View view) {
         super(view);
