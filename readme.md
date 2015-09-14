@@ -16,4 +16,20 @@ Important Notes
 - wait until the missile thing hit an object oder flies out of the screen
 - shoot again
 - don't fly into other things
+- collect misteryboxes for power-ups! (yeah)
 - profit
+
+More Important Notes
+--------------------
+- After pressing Start Game wait a little bit. It takes time to render all the objects. 
+- Problems with Emulator. Better test it on an actual device!
+
+
+Some Infos about the code
+-------------------------
+- Die Boxarrays werden zufallsgeneriert und wenn BoxarrayA am unteren Rand ankommt wird Boxarray ausserhalb des Bildschirms generiert und nach unten geschickt. (vice versa)
+- Die Gameobjects halten alle benötigten Daten für Matrix, Mesh, Hitboxen usw. 
+- Durch einen Gametimecounter wird die Boxgeschwindigkeit immer weiter hochgesetzt um die Schwierigkeit zu erhöhen. 
+- Es gibt drei verschiedene Power-ups (Schnellerer Jet, Schnellerer Schuss, Langsamere Gegner). Alle werden über das Powerupobject definiert.
+- Der Mediaplayer bugt ein bisschen aber lässt das Spiel nicht abstürzen.
+- Control CheatSheet unter Docs/controls.jpg

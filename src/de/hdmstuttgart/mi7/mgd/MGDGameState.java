@@ -56,7 +56,8 @@ public class MGDGameState implements GameState {
     private JetObject jetObject;
     private WeaponObject missileObject;
 
-    private String[][] randomEnemyObjects = {{"cow.obj", "road.png",}, {"sphere.obj", "road.png"}, {"teapot.obj", "road.png"}};
+
+    private String[][] randomEnemyObjects = {{"cow.obj", "red.png",}, {"sphere.obj", "yellow.png"}, {"teapot.obj", "green.png"}};
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -155,7 +156,7 @@ public class MGDGameState implements GameState {
         matrixPowerup =  new Matrix4x4(Matrix4x4.createTranslation(-100, 700, 0));
 
         //GAMEOBJECTS
-        powerUpObject = new PowerUpObject(new Matrix4x4(Matrix4x4.createTranslation(0,35,0)),2f,2f);
+        powerUpObject = new PowerUpObject(new Matrix4x4(Matrix4x4.createTranslation(0,60,0)),2f,2f);
         jetObject = new JetObject(new Matrix4x4(Matrix4x4.createTranslation(0, -15f, 0)), 5f, 5f);
         jetObject.getMatrix().scale(0.7f);
 
@@ -175,7 +176,7 @@ public class MGDGameState implements GameState {
             //JET
             jetObject.loadObject("jetObject.obj", "jetTexture.png", graphicsDevice, context);
             //MISSILE
-            missileObject.loadObject("icosahedron.obj", "blank.png", graphicsDevice, context);
+            missileObject.loadObject("icosahedron.obj", "invader.png", graphicsDevice, context);
             //POWERUP
             powerUpObject.loadObject("box.obj","box.png", graphicsDevice,context);
 
@@ -200,7 +201,7 @@ public class MGDGameState implements GameState {
 
         fontHitCount = graphicsDevice.createSpriteFont(null, 64);
         textHitCount = graphicsDevice.createTextBuffer(fontHitCount, 16);
-        textHitCount.setText("Life: "+hitCounter);
+        textHitCount.setText("Life: " + hitCounter);
 
         fontKillCount = graphicsDevice.createSpriteFont(null, 64);
         textKillCount = graphicsDevice.createTextBuffer(fontKillCount, 16);
@@ -216,7 +217,7 @@ public class MGDGameState implements GameState {
 
         fontStartGame = graphicsDevice.createSpriteFont(null, 120);
         textStartGame = graphicsDevice.createTextBuffer(fontStartGame, 16);
-        textStartGame.setText("Click to Start!");
+        textStartGame.setText("Touch to Start!");
 
         fontBack = graphicsDevice.createSpriteFont(null, 64);
         textBack = graphicsDevice.createTextBuffer(fontBack, 16);
@@ -227,7 +228,7 @@ public class MGDGameState implements GameState {
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop1);
+            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop4);
         }
 
 
@@ -418,8 +419,8 @@ public class MGDGameState implements GameState {
                 if(powerUpObject.isAlive()){
                     powerUpObject.getMatrix().translate(0, -0.10f, 0);
                     powerUpObject.updateHitBoxAABB();
+                    powerUpObject.getMatrix().rotateY(-deltaSeconds * 50);
                 }
-
 
                 if(powerUpObject.isActive()) {
                     powerUpTime += deltaSeconds;
@@ -455,6 +456,7 @@ public class MGDGameState implements GameState {
                 if(gameOverTime > 5) {
                     gameOver = true;
                     fs.setScore(levelCounter,killCounter);
+                    System.out.println("Level: "+levelCounter+" Kills: "+killCounter);
                     gameOver(game);
                 }
             }

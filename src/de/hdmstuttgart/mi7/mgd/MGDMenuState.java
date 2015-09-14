@@ -9,12 +9,15 @@ import de.hdmstuttgart.mi7.mgd.collision.AABB;
 import de.hdmstuttgart.mi7.mgd.collision.Point;
 import de.hdmstuttgart.mi7.mgd.game.Game;
 import de.hdmstuttgart.mi7.mgd.game.GameState;
+import de.hdmstuttgart.mi7.mgd.gameObject.JetObject;
 import de.hdmstuttgart.mi7.mgd.graphics.*;
 import de.hdmstuttgart.mi7.mgd.input.InputEvent;
 import de.hdmstuttgart.mi7.mgd.input.InputSystem;
 import de.hdmstuttgart.mi7.mgd.math.Matrix4x4;
 import de.hdmstuttgart.mi7.mgd.math.Vector3;
 import de.hdmstuttgart.mmi.mgd.R;
+
+import java.io.IOException;
 
 /**
  * Created by florianporada on 28.08.15.
@@ -33,6 +36,7 @@ public class MGDMenuState implements GameState {
     private Matrix4x4[] matrixMenu;
     private AABB[] aabbMenu;
     private float textOffset;
+    private JetObject thingObject;
 
     //MEDIAPLAYER
     private MediaPlayer mediaPlayer;
@@ -55,10 +59,15 @@ public class MGDMenuState implements GameState {
 
         textOffset = -20;
 
+        thingObject = new JetObject(new Matrix4x4(Matrix4x4.createTranslation(0, 500, 0)), 4f, 4f);
+        thingObject.getMatrix().scale(100f);
+
     }
 
     public void loadContent(Game game) {
         GraphicsDevice graphicsDevice = game.getGraphicsDevice();
+        Context context = game.getContext();
+
 
         fontTitle = graphicsDevice.createSpriteFont(Typeface.DEFAULT, 100);
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 16);
@@ -90,11 +99,17 @@ public class MGDMenuState implements GameState {
                 new AABB(-300, -192+(textOffset*4), 500, 64)
         };
 
-        Context context = game.getContext();
+
+        try {
+            thingObject.loadObject("box.obj", "something.png", graphicsDevice, context);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         //LOAD MEDIAPLAYER
         while (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop1);
+            mediaPlayer = MediaPlayer.create(context, R.raw.game_loop4);
         }
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
@@ -146,6 +161,8 @@ public class MGDMenuState implements GameState {
             inputSystem.popEvent();
             inputEvent = inputSystem.peekEvent();
         }
+
+        thingObject.getMatrix().rotateZ(20*deltaSeconds);
     }
 
     public void draw(Game game, float deltaSeconds) {
@@ -158,6 +175,7 @@ public class MGDMenuState implements GameState {
         renderer.drawText(textTitle, matTitle);
         for (int i = 0; i < textMenu.length; ++i)
             renderer.drawText(textMenu[i], matrixMenu[i]);
+        renderer.drawMesh(thingObject.getMesh(), thingObject.getMatrix(), thingObject.getMaterial());
     }
 
     public void resize(Game game, int width, int height) {
