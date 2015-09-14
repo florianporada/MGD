@@ -68,14 +68,14 @@ public class MGDHighscoreState implements GameState {
     }
 
     public void loadContent(Game game) {
-        String[][] score2 = fs.getScore();
+        String[][] score2 = fileWriter.readFromFile();
         GraphicsDevice graphicsDevice = game.getGraphicsDevice();
 
         System.out.println("myText: "+fileWriter.readFromFile());
 
         fontTitle = graphicsDevice.createSpriteFont(type, 96);
         textTitle = graphicsDevice.createTextBuffer(fontTitle, 20);
-        fontMenu = graphicsDevice.createSpriteFont(null, 64);
+        fontMenu = graphicsDevice.createSpriteFont(null, 32);
         textMenu = new TextBuffer[]{
                 graphicsDevice.createTextBuffer(fontTitle, 20),
                 graphicsDevice.createTextBuffer(fontMenu, 20),
@@ -88,7 +88,7 @@ public class MGDHighscoreState implements GameState {
                 graphicsDevice.createTextBuffer(fontMenu, 20),
                 graphicsDevice.createTextBuffer(fontMenu, 20),
                 graphicsDevice.createTextBuffer(fontMenu, 20),
-                graphicsDevice.createTextBuffer(fontMenu, 20)
+                graphicsDevice.createTextBuffer(fontTitle, 20)
         };
         textMenu[0].setText("Last Score");
         textMenu2 = new TextBuffer[]{
@@ -103,78 +103,77 @@ public class MGDHighscoreState implements GameState {
                 graphicsDevice.createTextBuffer(fontMenu, 30),
                 graphicsDevice.createTextBuffer(fontMenu, 30),
                 graphicsDevice.createTextBuffer(fontMenu, 30),
-                graphicsDevice.createTextBuffer(fontMenu, 30)
+                graphicsDevice.createTextBuffer(fontTitle, 30)
         };
         textMenu2[0].setText("");
         matMenu = new Matrix4x4[]{
                 Matrix4x4.createTranslation(-192,  640, 0),
-                Matrix4x4.createTranslation(-450,  512, 0),
-                Matrix4x4.createTranslation(-450,  432, 0),
-                Matrix4x4.createTranslation(-450,  352, 0),
-                Matrix4x4.createTranslation(-450,  272, 0),
-                Matrix4x4.createTranslation(-450,  192, 0),
-                Matrix4x4.createTranslation(-450,  112, 0),
-                Matrix4x4.createTranslation(-450,   32, 0),
-                Matrix4x4.createTranslation(-450,  -48, 0),
-                Matrix4x4.createTranslation(-450, -128, 0),
-                Matrix4x4.createTranslation(-450, -208, 0),
-                Matrix4x4.createTranslation( -50, -288, 0)
+                Matrix4x4.createTranslation(-400,  512, 0),
+                Matrix4x4.createTranslation(-400,  432, 0),
+                Matrix4x4.createTranslation(-400,  352, 0),
+                Matrix4x4.createTranslation(-400,  272, 0),
+                Matrix4x4.createTranslation(-400,  192, 0),
+                Matrix4x4.createTranslation(-400,  112, 0),
+                Matrix4x4.createTranslation(-400,   32, 0),
+                Matrix4x4.createTranslation(-400,  -48, 0),
+                Matrix4x4.createTranslation(-400, -128, 0),
+                Matrix4x4.createTranslation(-400, -208, 0),
+                Matrix4x4.createTranslation( -80, -400, 0)
         };
         matMenu2 = new Matrix4x4[]{
-                Matrix4x4.createTranslation(-100,  640, 0),
-                Matrix4x4.createTranslation(-100,  512, 0),
-                Matrix4x4.createTranslation(-100,  432, 0),
-                Matrix4x4.createTranslation(-100,  352, 0),
-                Matrix4x4.createTranslation(-100,  272, 0),
-                Matrix4x4.createTranslation(-100,  192, 0),
-                Matrix4x4.createTranslation(-100,  112, 0),
-                Matrix4x4.createTranslation(-100,   32, 0),
-                Matrix4x4.createTranslation(-100,  -48, 0),
-                Matrix4x4.createTranslation(-100, -128, 0),
-                Matrix4x4.createTranslation(-100, -208, 0),
-                Matrix4x4.createTranslation(-50,  -288, 0)
+                Matrix4x4.createTranslation(-50,  640, 0),
+                Matrix4x4.createTranslation(-50,  512, 0),
+                Matrix4x4.createTranslation(-50,  432, 0),
+                Matrix4x4.createTranslation(-50,  352, 0),
+                Matrix4x4.createTranslation(-50,  272, 0),
+                Matrix4x4.createTranslation(-50,  192, 0),
+                Matrix4x4.createTranslation(-50,  112, 0),
+                Matrix4x4.createTranslation(-50,   32, 0),
+                Matrix4x4.createTranslation(-50,  -48, 0),
+                Matrix4x4.createTranslation(-50, -128, 0),
+                Matrix4x4.createTranslation(-50, -208, 0),
+                Matrix4x4.createTranslation(-80,  -400, 0)
         };
         aabbMenu = new AABB[]{
-                new AABB(-450,  640, 120, 96),
-                new AABB(-450,  512, 120, 96),
-                new AABB(-450,  432, 120, 96),
-                new AABB(-450,  352, 120, 96),
-                new AABB(-450,  272, 120, 96),
-                new AABB(-450,  192, 120, 96),
-                new AABB(-450,  112, 120, 96),
-                new AABB(-450,   32, 120, 96),
-                new AABB(-450,  -48, 120, 96),
-                new AABB(-450, -128, 120, 96),
-                new AABB(-450, -208, 120, 96),
-                new AABB(-50,  -288, 120, 96)
+                new AABB(-400,  640, 120, 96),
+                new AABB(-400,  512, 120, 96),
+                new AABB(-400,  432, 120, 96),
+                new AABB(-400,  352, 120, 96),
+                new AABB(-400,  272, 120, 96),
+                new AABB(-400,  192, 120, 96),
+                new AABB(-400,  112, 120, 96),
+                new AABB(-400,   32, 120, 96),
+                new AABB(-400,  -48, 120, 96),
+                new AABB(-400, -128, 120, 96),
+                new AABB(-400, -208, 120, 96),
+                new AABB(-80,  -400, 120, 96)
         };
         aabbMenu2 = new AABB[]{
-                new AABB(-100,  640, 120, 96),
-                new AABB(-100,  512, 120, 96),
-                new AABB(-100,  432, 120, 96),
-                new AABB(-100,  352, 120, 96),
-                new AABB(-100,  272, 120, 96),
-                new AABB(-100,  192, 120, 96),
-                new AABB(-100,  112, 120, 96),
-                new AABB(-100,   32, 120, 96),
-                new AABB(-100,  -48, 120, 96),
-                new AABB(-100, -128, 120, 96),
-                new AABB(-100, -208, 120, 96),
-                new AABB(-50, -288, 120, 96)
+                new AABB(-50,  640, 120, 96),
+                new AABB(-50,  512, 120, 96),
+                new AABB(-50,  432, 120, 96),
+                new AABB(-50,  352, 120, 96),
+                new AABB(-50,  272, 120, 96),
+                new AABB(-50,  192, 120, 96),
+                new AABB(-50,  112, 120, 96),
+                new AABB(-50,   32, 120, 96),
+                new AABB(-50,  -48, 120, 96),
+                new AABB(-50, -128, 120, 96),
+                new AABB(-50, -208, 120, 96),
+                new AABB(-80, -400, 120, 96)
         };
 
         fontMenu = graphicsDevice.createSpriteFont(null, 64);
 
-//        for (int i=1;i<11;i++){
-//
-//            String name = i+". "+score2[(i-1)][0]+" :";
-//            String pionts = score2[(i-1)][1]+" Pionts, LvL: "+score2[(i-1)][2];
-//
-//            textMenu[i].setText(name);
-//            textMenu2[i].setText(pionts);
-//        }
-        textMenu[1].setText("last score");
-        textMenu2[1].setText(fileWriter.readFromFile());
+        for (int i=1;i<11;i++){
+
+            String name = i+". "+score2[(i-1)][0]+" :";
+            String points = score2[(i-1)][1]+" Pionts, LvL: "+score2[(i-1)][2];
+
+            textMenu[i].setText(name);
+            textMenu2[i].setText(points);
+        }
+        textMenu[0].setText("Highscore");
         textMenu[11].setText("back");
 
 
