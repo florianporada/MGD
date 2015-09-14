@@ -213,7 +213,7 @@ public class MGDGameState implements GameState {
 
         fontHitCount = graphicsDevice.createSpriteFont(null, 64);
         textHitCount = graphicsDevice.createTextBuffer(fontHitCount, 16);
-        textHitCount.setText("Life: " + hitCounter);
+        textHitCount.setText("Hits: " + hitCounter);
 
         fontKillCount = graphicsDevice.createSpriteFont(null, 64);
         textKillCount = graphicsDevice.createTextBuffer(fontKillCount, 16);
