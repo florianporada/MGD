@@ -35,3 +35,6 @@ Some Infos about the code
 - Manchmal wird der MediaPlayer nicht richtig geladen, ein Neustart des Spiels hilft meistens.
 - Der Highscore State gibt zurzeit leider nur die Daten der letzten Session aus. (sollte aber für den Punkt persistente Daten reichen. Proof of Concept)
 - Control CheatSheet unter Docs/controls.jpg
+
+####Update
+- Highscore gibt es jetzt doch.
