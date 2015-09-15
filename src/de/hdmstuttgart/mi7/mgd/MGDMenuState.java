@@ -221,7 +221,6 @@ public class MGDMenuState implements GameState {
                 break;
 
             case 3:
-                mediaPlayer.release();
                 game.finish();
                 break;
         }

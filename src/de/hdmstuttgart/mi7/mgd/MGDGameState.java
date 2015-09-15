@@ -121,7 +121,7 @@ public class MGDGameState implements GameState {
         hudCam.setView(view);
 
         //COUNTER
-        hitCounter = 2;
+        hitCounter = 10;
         levelCounter = 0;
         killCounter = 0;
 
