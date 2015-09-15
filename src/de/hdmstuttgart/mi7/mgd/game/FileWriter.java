@@ -16,6 +16,7 @@ public class FileWriter {
     //Global placeholder
     String nv = "-N.V.-";
     String[][] score2 = new String[10][3];
+    String string="";
 
     private static final String TAG = MGDExerciseActivity.class.getName();
     private static final String FILENAME = "myFile.txt";
@@ -25,7 +26,73 @@ public class FileWriter {
         context = game.getContext();
     }
 
-    public void writeToFile(String string) {
+    public void writeToFile(int levelCounter, int killCounter) {
+        score2 = readFromFile();
+        Calendar k = Calendar.getInstance();
+        int day = k.get(Calendar.DAY_OF_MONTH);
+        int month = k.get(Calendar.MONTH);
+        int year = k.get(Calendar.YEAR);
+        String date = day + "/" + month + "/" + year;
+        System.out.println(score2[0][0]);
+        if (score2[0][0] == nv)
+        {
+            System.out.println("Datei ist n.V");
+            string = date + "," + levelCounter + "," + killCounter + ";";
+            for (int z = 0; z < 9; z++)
+            {
+                string += nv + "," + nv + "," + nv + ";";
+            }
+        } else {
+            for (int y = 9; y > -1; y--)
+            {
+                if (y == 9 && score2[y][1] == nv)
+                {
+                    score2[y][0] = date;
+                    score2[y][1] = String.valueOf(levelCounter);
+                    score2[y][2] = String.valueOf(killCounter);
+                }
+                else
+                {
+                    String[] min, temp = new String[3];
+                    min = new String[3];
+                    min[0] = date;
+                    min[1] = String.valueOf(killCounter);
+                    min[2] = String.valueOf(levelCounter);
+                    if (score2[y][1] == nv)
+                    {
+                        temp = score2[y];
+                        score2[y] = min;
+                        score2[y + 1] = temp;
+                    }
+                    else
+                    {
+                        if(score2[y][1] == nv){
+                            temp = score2[y];
+                            score2[y] = min;
+                            score2[y + 1] = temp;
+                        }
+                        else if (score2[y][1] != null)
+                        {
+                            int p = 1000;
+                            try {
+                                p = Integer.parseInt(score2[y][2]);
+                            }catch (Exception e){
+
+                            }
+                            if (p <= levelCounter) {
+                                temp = score2[y];
+                                score2[y] = min;
+                                score2[y + 1] = temp;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int z = 0; z < 10; z++) {
+                string = string + score2[z][0] + "," + score2[z][1] + "," + score2[z][2] + ";";
+            }
+        }
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(FILENAME, Context.MODE_PRIVATE));
             outputStreamWriter.write(string);
